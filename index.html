@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Modularisering av CSS</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script src="https://github.com/downloads/gnab/remark/remark-0.3.4.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://github.com/downloads/kjbekkelund/remark-bekk/bekk-0.0.3.js" type="text/javascript"></script>
+    <link href="https://github.com/downloads/kjbekkelund/remark-bekk/bekk-0.0.3.css" type="text/css" rel="stylesheet">
+    <style type="text/css" media="screen">
+      #slideshow .slide .content.front-page h1 { width: 100%; }
+      .slide p { padding: 0; margin: 1.1em 0; }
+      .slide ul { padding: 0; margin: 1.1em 0; }
+      .slide img { max-width: 100%; max-height: 600px; }
+      .slide .big { font-size: 4em; }
+      #slideshow .slide .content ul li { padding-left: 1.3em; }
+      #slideshow .slide .attr a { color:#333; font-size:0.8em; }
+      #slideshow .slide .fullscreen img { width:100%; height:100%; position:absolute; top:40px; left:0; }
+      #slideshow .slide .content.cols.two section { overflow: hidden; }
+      #slideshow .slide .content.cols.two .col { width: 45%; margin-right: 10%;}
+      #slideshow .slide .content.cols .col:last-child { margin-right: 0; }
+      .slide span.alt { color:#FD5158; }
+      .jquery { background-color: #1E2837; }
+      .nodejs { background-color: #3F4239; }
+      #slideshow .position { display: none; }
+      .attribution { position: absolute; bottom: 10px; opacity: 0.5; }
+    </style>
+  </head>
+  <body>
+      <textarea id="source">
+
+.front-page
+
+# Modularisering av CSS
+
+BEKK fagdag 31.08.2012
+
+Mads Mobæk
+
+---
+
+.agenda
+
+# Agenda
+
+* Grunnprinsipper
+* Tankesett (OOCSS, BEM, SMACSS)
+* Preprocessors (SASS, LESS)
+* Å jobbe i team
+
+---
+
+.fullscreen
+
+![Modularisering](gfx/cc-lego.jpeg)
+<small class="attribution">["Lego White House Kit"](http://www.flickr.com/photos/mr_t_in_dc/4765644259/) by Mr. T in DC (CC BY-ND 2.0)</small>
+
+---
+
+.middle.center
+
+# mod·u·lar·ize
+## to form or organize into modules, as for flexibility.
+
+---
+
+# Mål
+
+.cols.two
+
+<section>
+<div class="col">
+Modularisert slik at det er enkelt å:
+
+* vedlikeholde
+* gjenbruke
+* sette seg inn i for andre
+* jobbe på i et team
+
+![Deler](gfx/cc-lego-parts.jpeg)
+
+</div>
+<div class="col">
+Og samtidig gi god ytelse for sluttbruker:
+
+![Deler](gfx/cc-lego-car.jpeg)
+
+* 1-3 css-requests
+* Raskt å overføre fra server til nettleser - gzip
+* [Raskt for nettleser](https://developers.google.com/speed/docs/best-practices/rendering)
+</div>
+</section>
+
+<small class="attribution">["Lego Bits Box #1"](http://www.flickr.com/photos/jemsweb/4363545741/) by jemsweb (CC BY-SA 2.0), ["Lego speed"](http://www.flickr.com/photos/popcorncx/4660009412/) by Stephen Edmonds (CC BY-SA 2.0)</small>
+
+---
+
+# Trender
+
+* CSS blir stadig kraftigere
+* Stadig mer CSS 
+
+---
+
+.middle.center
+
+# CSS
+
+---
+
+.middle.center
+
+# Cascading Style Sheets
+
+---
+
+.middle.center
+
+# Cascading?
+
+---
+
+.middle.center
+
+## "The process of combining several style sheets and resolving conflicts between them."
+
+Håkon Wium Lie 
+
+[http://people.opera.com/howcome/2006/phd/#cascading](http://people.opera.com/howcome/2006/phd/#cascading)
+
+---
+
+# Cascading - med konflikt
+
+CSS
+
+    .css
+    /* ----------- user agent ----------- */
+    p {
+      color:      black;
+      font-size:  12px;
+    }
+
+    /* --- default.css (lastet først) --- */
+    p { 
+      color:      gray; 
+    }
+
+    section.featured p { 
+      color:      red; 
+    }
+
+    /* --- theme.css (lastet sist) ----- */
+    
+    section.featured p { 
+      color:      blue; 
+    }
+
+HTML
+
+    .html
+    <section class="featured">
+        <p>BEKK</p>
+    </section>
+
+---
+
+# Cascade rekkefølge
+
+    .css
+    /* ----------- user agent ----------- */
+    p {
+      color:      black;
+      font-size:  12px;
+    }
+
+    /* --- default.css (lastet først) --- */
+    p { 
+      color:      gray; 
+    }
+
+    section.featured p { 
+      color:      red; 
+    }
+
+    /* --- theme.css (lastet sist) ----- */
+    
+    section.featured p { 
+      color:      blue; 
+    }
+
+Finn alle deklarasjoner (`property: value`) som gjelder elementet (`p`) og property (`color`). Ranger de etter kilder og viktighet:
+
+
+    .no-highlight
+    Rang    Kilde       Viktighet     Antall?
+    1.      user        !important    0
+    2.      author      !important    0
+    3.      author      normal        3 (p, section.featured p, section.featured p)
+    4.      user        normal        0
+    5.      user agent                1 (p)
+
+---
+
+# Cascade rekkefølge #2
+
+Av den med høyest rang som holdt deklarasjoner (style.css + theme.css), var det kun en deklarasjon? Nei, så vi må fortsette:
+
+    .css
+    /* --- default.css (lastet først) --- */
+    p { 
+      color:      gray; 
+    }
+
+    section.featured p { 
+      color:      red; 
+    }
+
+    /* --- theme.css (lastet sist) ----- */
+    
+    section.featured p { 
+      color:      blue; 
+    }
+
+## Spesifitet
+Gi selektorene en score basert på hvor spesifikke de er:
+
+    .no-highlight
+    a = 1 hvis det finnes en style="..."-attributt på elementet inline i HTML
+    b = antall ID-attributter i selektor (#id)
+    c = antall klasse (.error), attributt (input[type=text]) og 
+        pseudu-klasse-selektorer (:hover, :nth-child) 
+    d = antall type (div) og pseduo-element-selektorer (:first-line)
+
+---
+
+# Cascade rekkefølge #3
+
+## Altså:
+
+    .no-highlight
+    style.css:
+    -------------------------------------------------------------------
+    p                    /* a=0 b=0 c=0 d=2 -> specificity = 0,0,0,1 */
+    section.featured p   /* a=0 b=0 c=1 d=2 -> specificity = 0,0,1,2 */
+
+    theme.css:
+    -------------------------------------------------------------------
+    section.featured p   /* a=0 b=0 c=1 d=2 -> specificity = 0,0,1,2 */
+
+## Har vi en klar vinner?
+Nope, det er fortsatt uavgjort mellom `section.featured p` i style.css og theme.css. Regelen er da at den som ble definert sist vinner - i dette tilfellet theme.css.
+
+Fortsatt forvirret? [http://www.maxdesign.com.au/articles/css-cascade/](http://www.maxdesign.com.au/articles/css-cascade/)
+
+---
+
+.middle.center
+# Mens vi er inne på selektorer...
+
+---
+
+# Depth of applicability
+
+"HTML is like a tree structure of parents and children. The depth of applicability is the number of generations that are affected by a given rule." (SMACSS)
+
+## Tett kobling :(
+Vanskelig å gjenbruke og mindre motstandsdyktig mot endringer
+
+    .css
+    /* Depth of applicability = 5 */
+    .sidebar .links ul > li a
+
+## Løs kobling :)
+Enklere å gjenbruke!
+
+    .css
+    /* Depth of applicability = 2 */
+    .list-item a
+
+Drawback: potensielt flere klasser i HTML
+
+---
+
+.middle.center
+# Hva har dette og si for modularisering av CSS?
+
+---
+
+# Prinsipp #1
+
+## Hva
+Unngå selektorer med høy spesifitet, bruk fortrinnsvis `.class` og `tag` og ikke flere enn nødvendig.
+
+## Hvorfor
+
+"Some CSS should be allowed to cascade. Base typography, links, and the such are prime examples of something not to redeclare over and over again. This would only serve to weigh down a project and make it even more unmanageable. Instead, the goal as always is to strike a balance." (Mark Otto, creator of Bootstrap)
+
+"Find ways to isolate components and make them more durable by limiting the scope of their CSS. You'll discover that components can be more easily rearranged without causing adverse effects and the amount of code necessary will likely decrease." (Mark Otto, creator of Bootstrap)
+
+---
+
+# Selektorer
+
+## Et utvalg: 
+
+* universal - `*`
+* type - `div`
+* id - `#header`
+  * høy vekt
+  * minimal forskjell mellom id og class i ytelse
+  * kommer du virkelig til å bare ha en av denne?
+* class - `.amount`
+* attribute - `input[type=text]`
+* pseudo - `:first-child`, `:last-child`, `:nth-child`, m.fl.
+* descendant - `div p`
+* child - `div > p`
+
+---
+
+http://www.justinmarsan.com/blog/researches/2012/04/21/css-methodology-oocss-bem-smacss/
+
+http://lea.verou.me/2011/03/on-css-preprocessors/
+
+http://nicolasgallagher.com/about-html-semantics-front-end-architecture/
+
+http://www.slideshare.net/stubbornella/our-best-practices-are-killing-us
+
+http://coding.smashingmagazine.com/2012/06/19/classes-where-were-going-we-dont-need-classes/
+
+http://coding.smashingmagazine.com/2012/04/20/decoupling-html-from-css/
+
+---
+
+# Semantisk css?
+
+Semantisk HTML eller CSS? (microformats, HTML5). Er det noen vits?
+  * http://coding.smashingmagazine.com/2011/11/11/our-pointless-pursuit-of-semantic-value/
+  * http://coding.smashingmagazine.com/2011/11/12/pursuing-semantic-value/
+  * Semantikkens verdi sammen med JS
+  * W3C HTML5 spec: "authors are encouraged to use values that describe the nature of the content, rather than values that describe the desired presentation of the content"
+
+---
+
+.agenda
+
+# Hva har andre tenkt?
+
+* OOCSS     <span class="alt">Object Oriented CSS</span>
+* BEM       <span class="alt">Block, Element, Modifier</span>
+* SMACSS    <span class="alt">Scalable and Modular Architecture for CSS</span>
+
+---
+
+.middle.center
+
+# OOCSS
+## Object Oriented CSS
+Nicole Sullivan
+
+---
+
+# OOCSS
+
+
+  http://coding.smashingmagazine.com/2011/12/12/an-introduction-to-object-oriented-css-oocss/
+  * Separer 
+    * struktur og skin
+    * container og innhold
+  * Flere klasser i markup.
+  * Vanskeligere å ta i bruk på en eksisterende side?
+  * Har ikke semantiske klasser (dvs. de er stil-semantisk, men ikke innholds-semantisk)
+
+Components = LEGO
+
+Tag - kun for ting som er default
+Samme spesifitet på ting gjør det enkelt å overstyre stiler. Da er det kun rekkefølgen ting lastes i som styrer:
+
+    .css
+    .module .hd {}
+    .module2 .hd {}
+
+ids are like singletons - avoid them
+
+Encapsulation - ikke stil innhold i moduler utenfra:
+Nope: .hd {}
+Yep: .module .hd{}
+
+---
+
+# Hva er et OOCSS-objekt?
+
+"Basically, a CSS “object” is a repeating visual pattern, which can be abstracted into an independent snippet of HTML, CSS, and possibly JavaScript. Once created, an object can then be reused throughout a site." (OOCSS wiki)
+
+* HTML
+* CSS
+* Bilder
+* JavaScript
+
+---
+
+.cols.two 
+
+# Separer struktur og skin
+
+Struktur: `mod`, `top`, `inner`, `bd`, `bottom`
+
+Skin: `grab`, `simple`, `simpleExt`
+
+<section>
+<div class="col">
+
+    .html
+    <div class="mod grab"> 
+      <b class="top"></b>
+      <div class="inner">
+        <img src=".." class="img" />
+      </div>
+      <b class="bottom"></b> 
+    </div>
+
+
+    <div class="mod simpleExt"> 
+      ... 
+    </div>
+
+
+    <div class="mod simple"> 
+      ... 
+    </div>
+</div>
+
+<div class="col">
+
+![OOCSS modul - eksempel](gfx/oocss-module.png)
+</div>
+</section>
+
+Å separere struktur og skin i OOCSS kan også bety å bruker klasser på elementer (`<img class="img" />`). På denne måten kan man bytte fra `<img>` til `<svg>` uten at CSSen må forandres
+
+---
+
+.middle.center
+
+# BEM
+## Block, Element, Modifier
+Yandex (russisk selskap)
+
+---
+
+# BEM
+  http://coding.smashingmagazine.com/2012/04/16/a-new-front-end-methodology-bem/
+  http://bem.github.com/bem-method/pages/beginning/beginning.en.html
+
+---
+
+.middle.center
+# SMACSS
+## Scalable and Modular Architecture for CSS
+Johnatan Snook - Yahoo
+
+---
+
+# SMACSS
+
+Deler inn i fem kategorier:
+
+* Base
+* Layout
+* Module
+* State
+* Theme
+
+TODO: Beskrivelse av hver?
+
+---
+
+# Base
+
+* standard overskrifter, fontstørrelse, font-type og farger
+* `a`, `body`, `table`
+  * element-selector
+* Kun ting som alltid vil være det samme: http://smacss.com/book/drop-the-base
+
+---
+
+# Layout
+
+* hvordan forholder elementer seg til hverandre? Posisjonering
+* `.l-inline`, `.l-constrained` (`#sidebar`)
+  * class-selector (eller id)
+* inneholder moduler
+
+---
+
+# Module
+
+* frittstående komponent. Fleksibel nok til å kunne flyttes rundt i DOMen uten at den brekker
+* kan inneholde andre komponenter
+* `.sidebar`, `.dropdown`, `.navigation` (mest brukt, ingen prefix)
+  * class-selector
+* stil innhold med
+  * andre klasser, `.sidebar-header`, `.article-count`
+  * child-selector, `.navigation > li`
+  * (element selector, hvis det har semantisk betydning)
+* subklassing
+  * `.featured`
+    * `.featured-stacked` (kun det som er forskjellig)
+  * Bruker begge klassene `<div class="featured featured-stacked">...</div>`
+
+---
+
+# State
+Forteller hvilken tilstand modulen eller layouten er i. Ligner på submoduler, men:
+
+* kan brukes på både layout og moduler
+* egnet til bruk som JavaScript-hook
+* blir gjerne lagt til og fjernet run-time
+
+* Navnekonvensjon: prefix med `is` - `.is-hidden`, `.is-collapsed`, `.is-error`
+* Utgangspunktet er at states skal kunne brukes i alle moduler/layouts. Hvis staten er modul-spesifik, kan man lage en egen state for den modulen. F.eks. `.is-sidebar-error`
+* Bruk av `!important` er tillatt hvis nødvendig, men kun på state
+
+Alt. putt alt i `data-xx`, f.eks. `<div class="message" data-state="hidden"></div>` og style det med `.message[data-state=hidden]`.
+
+---
+
+# Theme
+
+Neppe nødvendig for mindre sider, men kan brukes for å overstyrke look-n-feel:
+
+* overstyre fonter, farger o.l. angitt i base
+* overstyre utseende på moduler
+
+TODO: eksempler
+TODO: alternativt LESS/SASS
+
+---
+
+# State change
+
+Hvordan skal komponentene se ut i forskjellige tilstander? Tilstand kan forandres ved:
+
+* Klassenavn. Manipulering via JavaScript `toggleClass("is-hidden")`
+  * parent og sibling states lager tettere kobling mellom moduler
+* pseudoklasser, f.eks. `a:hover`, `a:visited`, `:nth-child`, `:last-child
+* media query
+  * plasser media-queriene sammen med modulene. Dette er i tråd med at moduler skal være frittstående og ha all informasjon om seg selv
+  * (unngå å måtte gjenta media-query selector for hånd med preprosessor)
+
+
+Tenk "default state" og "progressive enhancement"
+
+---
+
+# Filorganisering
+
+http://smacss.com/book/preprocessors
+
+---
+
+.agenda
+
+# Hva gjør de store?
+
+* Yahoo
+* Google
+* Twitter
+* Facebook
+
+---
+
+.middle.center
+# CSS preprocessors
+## SASS & LESS
+
+---
+
+# Hva gjør en preprosessor?
+
+* Konkatenering
+* (Minifisering)
+* Nettleserstøtte
+
+* Noen alternativer
+  * LESS
+  * SASS
+  * Stylus
+
+---
+
+# LESS
+
+* Nesting? Nei takk
+
+---
+
+# SASS
+
+* Avhengighet til Ruby
+* Compass
+  * Sprites
+
+---
+
+# Drawbacks
+
+http://blog.millermedeiros.com/there-is-no-spoon/
+
+* Kan få generert store CSS-filer ved uheldig bruk av mixins/include (eksempel)
+* Kan få for spesifikke selektorer/store filer ved overdreven bruk av nøsting
+* Noe mer komplekst utviklingsmiljø (og byggmiljø)
+* Ikke gitt at det lønner seg i veldig små prosjekter
+
+---
+
+.middle.center
+
+# Å kommunisere innholdet
+
+---
+
+# Prototyper og CSS dokumentasjon
+http://smacss.com/book/prototyping
+https://github.com/styleguide/css
+http://warpspire.com/kss
+http://www.flickr.com/photos/aarronwalter/5579386649/sizes/o/in/photostream/
+
+
+
+---
+Når er det greit å bruke #id?
+gzip
+http://smacss.com/book/formatting
+https://developers.google.com/speed/docs/best-practices/rendering#UseEfficientCSSSelectors
+Viktigheten av caching
+http://csswizardry.com/2012/06/the-open-closed-principle-applied-to-css/
+Layout #header vs <header>
+JS-hooks
+Hva gjør front-end utviklere i BEKK?
+Bootstrap
+
+HTML5 elementer
+http://smacss.com/book/html5
+
+      </textarea>
+    <div id="slideshow"></div>
+  </body>
+</html>
