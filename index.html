@@ -18,7 +18,10 @@
 
       #slideshow .slide .content ul li { padding-left: 1.3em; }
       #slideshow .slide .attr a { color:#333; font-size:0.8em; }
-      #slideshow .slide .fullscreen img { width:100%; height:100%; position:absolute; top:40px; left:0; }
+      #slideshow .slide .fullscreen img { max-width:100%; max-height:100%; position:absolute; top:40px; left:0; }
+      #slideshow .slide .content.fullscreen h1 { background: #FD5158; display:table; padding: 20px; border-radius: 50%; width:250px; height: 250px; text-align: center; }
+      #slideshow .slide .content.fullscreen.center h1 { margin: 0 auto; }
+      #slideshow .slide .content.fullscreen h1 > span { padding: 10px; display:table-cell; background:transparent; vertical-align:middle; padding:0; color: #000;}
       #slideshow .slide .content.cols.two section { overflow: hidden; }
       #slideshow .slide .content.cols.two .col { width: 45%; margin-right: 10%;}
       #slideshow .slide .content.cols .col:last-child { margin-right: 0; }
@@ -50,14 +53,14 @@ Mads Mobæk
 
 * Hvorfor modularisere?
 * CSS refresher
-* Tankesett (OOCSS, BEM, SMACSS)
+* Tankesett <span class="alt">OOCSS, BEM og SMACSS</span>
 * Ytelse
-* Litt om preprocessors (SASS, LESS)
+* Litt om preprocessors <span class="alt">SASS / LESS</span>
 * Å kommunisere CSS til andre
 
 ---
 
-.fullscreen.center
+.fullscreen.center.middle
 
 ![Korthus](gfx/cc-card1.jpg)
 
@@ -82,17 +85,17 @@ Mads Mobæk
 
 ---
 
-.fullscreen
-
-![Modularisering](gfx/cc-lego.jpeg)
-<small class="attribution">["Lego White House Kit"](http://www.flickr.com/photos/mr_t_in_dc/4765644259/) by Mr. T in DC (CC BY-ND 2.0)</small>
-
----
-
 .middle.center
 
 # mod·u·lar·ize
 ## to form or organize into modules, as for flexibility.
+
+---
+
+.fullscreen
+
+![Modularisering](gfx/cc-lego.jpeg)
+<small class="attribution">["Lego White House Kit"](http://www.flickr.com/photos/mr_t_in_dc/4765644259/) by Mr. T in DC (CC BY-ND 2.0)</small>
 
 ---
 
@@ -113,13 +116,13 @@ Modularisert slik at det er enkelt å:
 
 </div>
 <div class="col">
-Og samtidig gi god ytelse for sluttbruker:
+Samtidig bør ferdig CSS gi god ytelse for sluttbruker:
 
 ![Deler](gfx/cc-lego-car.jpeg)
 
-* 1-3 CSS-requests
-* Raskt å overføre fra server til nettleser - gzip
-* [Raskt for nettleser](https://developers.google.com/speed/docs/best-practices/rendering)
+* 1-3 HTTP-requests
+* Raskt å overføre fra server til nettleser
+* Raskt å prosessere for nettleser[*](https://developers.google.com/speed/docs/best-practices/rendering)
 </div>
 </section>
 
@@ -145,14 +148,15 @@ Og samtidig gi god ytelse for sluttbruker:
 # Selektorer (utvalg)
 
 
-* universal   <span class="alt">*</span>
-* type        <span class="alt">div</span>
-* id          <span class="alt">#header</span>
-* class       <span class="alt">.amount</span>
-* attribute   <span class="alt">input[type=text]</span>
-* pseudo      <span class="alt">:nth-child</span>
-* descendant  <span class="alt">div p</span>
-* child       <span class="alt">div > p</span>
+* universal           <span class="alt">*</span>
+* type                <span class="alt">div</span>
+* id                  <span class="alt">#header</span>
+* class               <span class="alt">.amount</span>
+* attribute           <span class="alt">input[type=text]</span>
+* pseudo-klasser      <span class="alt">:nth-child</span>
+* pseudo-elementer    <span class="alt">::before</span>
+* descendant          <span class="alt">div p</span>
+* child               <span class="alt">div > p</span>
 
 ---
 
@@ -185,7 +189,7 @@ CSS
 
     /* --- default.css (lastet først) --- */
     p { 
-      color:      gray; 
+      color:      grey; 
     }
 
     section.featured p { 
@@ -218,7 +222,7 @@ HTML
 
     /* --- default.css (lastet først) --- */
     p { 
-      color:      gray; 
+      color:      grey; 
     }
 
     section.featured p { 
@@ -246,12 +250,34 @@ Finn alle deklarasjoner (`property: value`) som gjelder elementet (`p`) og prope
 
 # Cascade rekkefølge #2
 
+Av den med høyest rang som holdt deklarasjoner (style.css + theme.css), var det kun en deklarasjon?
+
+    .css
+    /* --- default.css (lastet først) --- */
+    p { 
+      color:      grey; 
+    }
+
+    section.featured p { 
+      color:      red; 
+    }
+
+    /* --- theme.css (lastet sist) ----- */
+    
+    section.featured p { 
+      color:      blue; 
+    }
+
+---
+
+# Cascade rekkefølge #2
+
 Av den med høyest rang som holdt deklarasjoner (style.css + theme.css), var det kun en deklarasjon? Nei, så vi må fortsette:
 
     .css
     /* --- default.css (lastet først) --- */
     p { 
-      color:      gray; 
+      color:      grey; 
     }
 
     section.featured p { 
@@ -304,7 +330,20 @@ Fortsatt forvirret? [http://www.maxdesign.com.au/articles/css-cascade/](http://w
 
 # Depth of applicability
 
-"HTML is like a tree structure of parents and children. The depth of applicability is the number of generations that are affected by a given rule." (SMACSS)
+"HTML is like a tree structure of parents and children. The depth of applicability is the number of generations that are affected by a given rule." - [SMACSS](http://smacss.com/book/applicability)
+
+## Tett kobling :(
+Vanskelig å gjenbruke og mindre motstandsdyktig mot endringer
+
+    .css
+    /* Depth of applicability = 5 */
+    .sidebar .links ul > li a
+
+---
+
+# Depth of applicability
+
+"HTML is like a tree structure of parents and children. The depth of applicability is the number of generations that are affected by a given rule." - [SMACSS](http://smacss.com/book/applicability)
 
 ## Tett kobling :(
 Vanskelig å gjenbruke og mindre motstandsdyktig mot endringer
@@ -321,6 +360,43 @@ Enklere å gjenbruke!
     .list-item a
 
 Drawback? Potensielt flere klasser i HTML
+
+---
+
+# Depth of applicability #2
+
+Regler matches fra høyre mot venstre
+
+---
+
+# Depth of applicability #2
+
+Regler matches fra høyre mot <span class="alt">venstre</span>
+
+---
+
+# Depth of applicability #2
+
+Regler matches fra høyre <span class="alt">mot venstre</span>
+
+---
+
+# Depth of applicability #2
+
+Regler matches fra <span class="alt">høyre mot venstre</span>
+
+---
+
+# Depth of applicability #2
+
+Regler matches <span class="alt">fra høyre mot venstre</span>
+
+---
+
+# Depth of applicability #2
+
+Regler <span class="alt">matches fra høyre mot venstre</span>
+
 
 ---
 
@@ -366,13 +442,13 @@ Nicole Sullivan
 
 "Basically, a CSS “object” is a repeating visual pattern, which can be abstracted into an independent snippet of HTML, CSS, and possibly JavaScript. Once created, an object can then be reused throughout a site." (OOCSS wiki)
 
-## Har både [ideer og tanker](https://github.com/stubbornella/oocss/wiki) og en [implementasjon](https://github.com/stubbornella/oocss)
+## Har både [prinsipper](https://github.com/stubbornella/oocss/wiki) og en [implementasjon](https://github.com/stubbornella/oocss)
 
 * Hovedprinsipper:
   * Separer struktur og skin
   * Separate container and content
 * Implementasjon
-  * Laget for å extendes
+  * Laget for å [extendes](http://csswizardry.com/2012/06/the-open-closed-principle-applied-to-css/)
   * Enkelte komponenter er ferdig (grid, modules) andre eksperimentelle (tabs, media object)
 
 ---
@@ -414,9 +490,11 @@ Skin: `grab`, `simple`, `simpleExt`
 </div>
 </section>
 
-Å separere struktur og skin i OOCSS kan også bety å bruker klasser på elementer (`<img class="img" />`). På denne måten kan man bytte fra `<img>` til `<svg>` uten at CSSen må forandres
+Å separere struktur og skin i OOCSS kan også bety å bruke klasser på elementer (`<img class="img" />`). På denne måten kan man bytte fra `<img>` til `<svg>` uten at CSSen må forandres
 
 ---
+
+.big-code
 
 # Separate container and content
 
@@ -440,6 +518,8 @@ Og lage en beskrivende klasse:
 I tillegg vil dette gjøre at man ikke trenger å overstyre stiler når man ønsker at en `<h2>` inne i ` .fancyObject h2` skal se ut som en vanlig `<h2>`
 
 ---
+
+.big-code
 
 # Andre prinsipper
 
@@ -473,7 +553,8 @@ Fra Yandex (største søkemotor og mest besøkte side i Russland)
 
 * Mer enn CSS. Går også inn på templates, JavaScript m.m.
 * Har også et [eget repo](https://github.com/bem/bem-tools) med verktøy (kommandolinje scaffolding, bygging)
-* For store organisasjoner med langsiktighet
+* For store organisasjoner 
+* Langsiktighet
 
 ---
 
@@ -588,7 +669,7 @@ En blokk består alltid av templates (XSL/JavaScript) og CSS, samt JavaScript og
     Block('menu').elem('item').setMod('state', 'current'); // JS
 
 * Har en byggeprosess hvor alt en blokk består av bygges og kommer ut som en produksjonsklar versjon med minifisert CSS/JS m.m.
-* Har selv egne team som jobber på hvert sitt område:
+* Yandex har egne team som jobber på hvert sitt område:
   * Core = verktøystøtte, ytelse
   * Library = bygge/vedlikeholde komponenter
   * Developers = bruker ferdig bibliotek
@@ -640,15 +721,13 @@ For stiler som er delt av alle - f.eks. fontstørrelse, font-type og farger
 * Består typisk av element-selektorer: `a`, `body`, `table`
 * Konservativ holdning. Er du sikker på at det alltid vil se slik ut?
 
-"Some CSS should be allowed to cascade. Base typography, links, and the such are prime examples of something not to redeclare over and over again. This would only serve to weigh down a project and make it even more unmanageable. Instead, the goal as always is to strike a balance." (Mark Otto, creator of Bootstrap)
-
 ---
 
 .big-code
 
 # Layout
 
-Beskriver kun hvordan forholder elementer seg til hverandre, f.eks.:
+Beskriver kun hvordan elementer forholder seg til hverandre, f.eks.:
 
 
     .css
@@ -756,6 +835,19 @@ Utgangspunktet er at states skal kunne brukes i alle moduler/layouts. Hvis state
         font-weight: bold;
     }
 
+---
+
+.big-code
+
+# State
+
+Utgangspunktet er at states skal kunne brukes i alle moduler/layouts. Hvis staten er modul-spesifik, kan man lage en egen state for den modulen. 
+
+    .css
+    .is-sidebar-error {
+        font-weight: bold;
+    }
+
 # Alternativ til is-convensjon   
 
     .css
@@ -777,8 +869,7 @@ Neppe nødvendig for mindre sider, men kan brukes for å overstyrke look-n-feel:
 * overstyre fonter, farger o.l. angitt i base
 * overstyre utseende på moduler
 
-TODO: eksempler
-TODO: alternativt LESS/SASS
+Et alternativ kan være å bruke en CSS preprocessor som SASS/LESS
 
 ---
 
@@ -803,6 +894,79 @@ TODO: alternativt LESS/SASS
 ---
 
 .middle.center
+
+# Virker det kjent?
+
+---
+
+.middle.center
+
+# Virker det kjent?
+## "If you were wondering what an example implementation of SMACSS might look like? Bootstrap is a perfect example."
+
+[Jonathan Snook](http://snook.ca/archives/html_and_css/prefixed-classes-bootstrap)
+
+---
+
+.center
+
+![](gfx/bootstrap.png)
+
+Mark Otto & Jacob Thornton fra Twitter
+
+[http://getbootstrap.com/](http://getbootstrap.com/)
+
+([som forøvrig ikke hadde hørt om SMACSS](http://lucisferre.net/2012/06/27/whats-so-great-about-twitter-bootstrap/))
+
+---
+
+# Bootstrap
+
+Ekstremt populært:
+
+![](gfx/bootstrap-gh1.png)
+
+---
+
+# Bootstrap
+
+Ekstremt populært:
+
+![](gfx/bootstrap-gh2.png)
+
+---
+
+# Bootstrap
+
+![](gfx/bootstrap-organization.png)
+
+---
+
+# Bootstrap
+
+![](gfx/bootstrap-hw.png)
+
+---
+
+# Bootstrap
+
+![](gfx/bootstrap-badges.png)
+
+---
+
+# Bootstrap
+
+![](gfx/bootstrap-thumbs.png)
+
+---
+
+# Bootstrap
+
+![](gfx/bootstrap-messages.png)
+
+---
+
+.middle.center
 # Oppsummert
 ## Hva er man enige om?
 
@@ -815,11 +979,17 @@ Objekt ~ Block ~ Module
 
 ---
 
+.middle.center
+# Lag subklaser ~ modifers ~ submoduler
+## Som kun tar for seg deklarasjonene som må overstyres
+
+---
+
 .big-code
 
 # Unngå tett kobling 
 
-Ved å unngå cascading og spesifikke selektorer
+Ved å minimere cascading og bruk av spesifikke selektorer
 
     .css
     .module .title {} /* OOCSS */
@@ -829,14 +999,19 @@ Ved å unngå cascading og spesifikke selektorer
 
 ---
 
-# TODO: mer
+.middle.center
+# Men cascade noe...
+
+"Some CSS should be allowed to cascade. Base typography, links, and the such are prime examples of something not to redeclare over and over again. This would only serve to weigh down a project and make it even more unmanageable. Instead, the goal as always is to strike a balance." 
+
+(Mark Otto, creator of Bootstrap)
 
 ---
 
 .middle.center
 
 # Klasser er tingen
-## Bruk ID selektorer kun på det som virkelig er unikt. Unngå tag-selektorer da det lager tettere avhengighet til HTML.
+## Bruk ID-selektorer kun på det som virkelig er unikt. Unngå tag-selektorer da det lager tettere avhengighet til HTML.
 
 ---
 
@@ -846,7 +1021,7 @@ Ved å unngå cascading og spesifikke selektorer
 
 ---
 
-.fullscreen.center
+.fullscreen.center.middle
 
 # Ytelsen?
 
@@ -877,10 +1052,25 @@ Etter første lasting og "aldri" hentes igjen:
 
 "Gzipping generally reduces the response size by about 70%. Approximately 90% of today's Internet traffic travels through browsers that claim to support gzip" - [yahoo](http://developer.yahoo.com/performance/rules.html)
 
-## GIEF COMPRESSED CONTENTS PLZ (browser)
+---
+
+# gzip
+
+"Gzipping generally reduces the response size by about 70%. Approximately 90% of today's Internet traffic travels through browsers that claim to support gzip" - [yahoo](http://developer.yahoo.com/performance/rules.html)
+
+## GIEF CMPRSSD CONTNT PLZ (browser)
 ![GZip request](gfx/gzip-request.png)
 
-## U R WELCOME (server)
+---
+
+# gzip
+
+"Gzipping generally reduces the response size by about 70%. Approximately 90% of today's Internet traffic travels through browsers that claim to support gzip" - [yahoo](http://developer.yahoo.com/performance/rules.html)
+
+## GIEF CMPRSSD CONTNT PLZ (browser)
+![GZip request](gfx/gzip-request.png)
+
+## 200 OK (server)
 ![GZip response](gfx/gzip-response.png)
 
 ---
@@ -889,6 +1079,22 @@ Etter første lasting og "aldri" hentes igjen:
 
 # Høres bra ut
 ## Men hva med alle disse klassene i HTMLen?
+
+---
+
+# La oss telle!
+
+## Hvor mange klasser finnes i HTMLen?
+
+    .bash
+    #!/bin/bash
+    # Counts the number of CSS classes in given input. Includes duplicates.
+    cat $1 \
+    | grep -Po 'class=\\?"?([-a-zA-Z0-9_ ]+)\\?"?'  \
+    | sed -E 's/class=\\?"?([-a-zA-Z0-9_ ]+)\\?"?/\1/g' \
+    | tr -s " " "\012" \
+    |wc -l \
+    |tr -d ' '
 
 ---
 
@@ -915,11 +1121,13 @@ Etter første lasting og "aldri" hentes igjen:
 
 ---
 
+.middle.center
+
 # Facebook (newsfeed)
 
 .big-code
 
-    .no-highlight
+    .bash
     facebook.html           Uncompressed      Compressed
     ----------------------------------------------------
     Classes                      5849               0
@@ -930,26 +1138,13 @@ Etter første lasting og "aldri" hentes igjen:
 
 ---
 
-# Google søkeresultat
-
-.big-code
-
-    .no-highlight
-    google.html             Uncompressed      Compressed
-    ----------------------------------------------------
-    Classes                       208               0
-    Original                    98.61 kB        27.45 kB
-    Without classes             96.73 kB        27.12 kB
-    ----------------------------------------------------
-    Diff                         1.88 kB         0.33 kB
-
----
+.middle.center
 
 # Google plus newsfeed
 
 .big-code
 
-    .no-highlight
+    .bash
     googleplus.html         Uncompressed      Compressed
     ----------------------------------------------------
     Classes                      3735               0
@@ -960,11 +1155,30 @@ Etter første lasting og "aldri" hentes igjen:
 
 ---
 
+.middle.center
+
+# Youtube forside
+
+.big-code
+
+    .bash
+    youtube.html            Uncompressed      Compressed
+    ----------------------------------------------------
+    Classes                      3482               0
+    Original                   223.19 kB        24.00 kB
+    Without classes            153.08 kB        21.14 kB
+    ----------------------------------------------------
+    Diff                        70.11 kB         2.86 kB
+
+---
+
+.middle.center
+
 # Twitter newsfeed
 
 .big-code
 
-    .no-highlight
+    .bash
     twitter.html            Uncompressed      Compressed
     ----------------------------------------------------
     Classes                      1527               0
@@ -975,19 +1189,20 @@ Etter første lasting og "aldri" hentes igjen:
 
 ---
 
-# Youtube forside
+.middle.center
+
+# Google søkeresultat
 
 .big-code
 
-    .no-highlight
-    youtube.html            Uncompressed      Compressed
+    .bash
+    google.html             Uncompressed      Compressed
     ----------------------------------------------------
-    Classes                      3482               0
-    Original                   223.19 kB        24.00 kB
-    Without classes            153.08 kB        21.14 kB
+    Classes                       208               0
+    Original                    98.61 kB        27.45 kB
+    Without classes             96.73 kB        27.12 kB
     ----------------------------------------------------
-    Diff                        70.11 kB         2.86 kB
-
+    Diff                         1.88 kB         0.33 kB
 
 ---
 
@@ -1011,9 +1226,23 @@ Hentet fra [Steve Souders / csswizardry](http://csswizardry.com/2011/09/writing-
 8. Attribute `[type="text"]`
 9. Pseudo-classes/-elements `a:hover`
 
-## "The difference in speed between an ID and a class is almost totally irrelevant."
+---
 
-TODO: javascript og ytelse her https://github.com/kamicane/slickspeed/
+# Selektorytelse
+
+Hentet fra [Steve Souders / csswizardry](http://csswizardry.com/2011/09/writing-efficient-css-selectors/):
+
+1. ID `#header`
+2. Class `.promo`
+3. Type `div
+4. Adjacent sibling `h2 + p`
+5. Child `li > ul`
+6. Descendant `ul a`
+7. Universal `*`
+8. Attribute `[type="text"]`
+9. Pseudo-classes/-elements `a:hover`
+
+## "The difference in speed between an ID and a class is almost totally irrelevant."
 
 ---
 
@@ -1022,6 +1251,13 @@ TODO: javascript og ytelse her https://github.com/kamicane/slickspeed/
 # Konklusjon
 
 ## Ikke vær redd for å bruke klasser
+
+---
+
+.middle.center
+
+![](gfx/cc-geek.jpg)
+<small class="attribution">["Lego geek"](http://www.flickr.com/photos/philhawksworth/5356021956/in/photostream/) by Phil Hawksworth (CC BY 2.0)</small>
 
 ---
 
@@ -1039,56 +1275,659 @@ TODO: javascript og ytelse her https://github.com/kamicane/slickspeed/
 
 ---
 
-.middle.center
+.fullscreen.middle.center
 
-# CSS preprocessors
-## SASS & LESS
+# I need some new gear
+
+![](gfx/cc-batman.jpg)
+<small class="attribution">["LEGO Super Heroes Batman Batwing Battle 01"](http://www.flickr.com/photos/57933043@N00/6628887517/in/photostream/) by cbcd04 (CC BY-ND 2.0)</small>
 
 ---
 
-# TODO Hva gjør en preprosessor?
+.middle.center
 
-* Konkatenering
-* (Minifisering)
-* Nettleserstøtte
+![](gfx/lesssass.jpg)
+<small class="attribution">["LESS / SASS"](http://inspiredology.com/less-css-and-more-sass/) by Chris Goodwyn</small>
+
+---
+
+.fullscreen.middle.center
+
+# What's that?
+![](gfx/cc-batman.jpg)
+<small class="attribution">["LEGO Super Heroes Batman Batwing Battle 01"](http://www.flickr.com/photos/57933043@N00/6628887517/in/photostream/) by cbcd04 (CC BY-ND 2.0)</small>
+
+
+---
+
+.middle.center
+
+# A CSS preprocessor? 
+## Oh, you wouldn't be interested in that...
+
+---
+
+# Hva gjør en preprosessor?
+
+* Gir deg muligheter CSS ikke har enda, f.eks. variabler ([enda](http://www.w3.org/TR/css-variables/))
+* Renere kildekode. Færre gjentakelser. DRY
+* Letter vedlikehold
+* Kan (og bør) kompileres ned til en vanlig .css-fil ved bygging
+
+---
+
+# Hva gjør en preprosessor?
+
+* Gir deg muligheter CSS ikke har enda, f.eks. variabler ([enda](http://www.w3.org/TR/css-variables/))
+* Renere kildekode. Færre gjentakelser. DRY
+* Letter vedlikehold
+* Kan (og bør) kompileres ned til en vanlig .css-fil ved bygging
 
 ## Noen alternativer
-* LESS
 * SASS
+* LESS
 * Stylus
 
 ---
 
-# TODO LESS
+.big-code
 
-* Nesting? Nei takk
+# SASS
+## Syntactically Awesome Stylesheets
+
+* Hampton Catlin, Nathan Weizenbaum, Chris Eppstein
+* 2007
+* To forskjellige syntakser
+  * .sass (gammel)
+  * .scss (ny)
+* Ruby (m.fl.)
 
 ---
 
-# TODO SASS
+.big-code
 
-* Avhengighet til Ruby
-* Compass
-  * Sprites
+# SASS
+## Syntactically Awesome Stylesheets
+
+* Hampton Catlin, Nathan Weizenbaum, Chris Eppstein
+* 2007
+* To forskjellige syntakser
+  * .sass (gammel)
+  * .scss (ny)
+* Ruby (m.fl.)
+
+
+    .bash
+    gem install sass 
+    sass --watch style.scss:style.css --style compressed
 
 ---
 
-# TODO Drawbacks
+.big-code
 
-http://blog.millermedeiros.com/there-is-no-spoon/
+# LESS
 
-* Kan få generert store CSS-filer ved uheldig bruk av mixins/include (eksempel)
-* Kan få for spesifikke selektorer/store filer ved overdreven bruk av nøsting
+* Alexis Sellier, Dmitry Fadeyev
+* 2009, inspirert av SASS sin .scss-syntaks
+* Kan kompilere direkte i browser på klientside med less.js. Drawbacks:
+  * Flere http requests
+  * Kompileres i utgangspunktet hver gang
+* Node.js / binærvarianter (m.fl.) kan minifisere på samme måte som SASS
+
+---
+
+.big-code
+
+# LESS
+
+* Alexis Sellier, Dmitry Fadeyev
+* 2009, inspirert av SASS sin .scss-syntaks
+* Kan kompilere direkte i browser på klientside med less.js. Drawbacks:
+  * Flere http requests
+  * Kompileres i utgangspunktet hver gang
+* Node.js / binærvarianter (m.fl.) kan minifisere på samme måte som SASS
+
+
+    .bash
+    # -x    minify
+    lessc style.less > style.css -x
+
+---
+
+.cols.two.big-code
+
+# Variabler
+
+<section>
+  <div class="col">
+
+## SASS
+
+    .scss
+    $dark: #000;
+
+    color: $dark;
+
+</div>
+<div class="col">
+
+## LESS
+
+    .less
+    @dark: #000;
+
+    color: @dark;
+  </div>
+</section>
+
+---
+
+.cols.two.big-code
+
+# Variabler
+
+<section>
+  <div class="col">
+
+## SASS
+
+    .scss
+    $dark: #000;
+
+    color: $dark;
+
+</div>
+<div class="col">
+
+## LESS
+
+    .less
+    @dark: #000;
+
+    color: @dark;
+  </div>
+</section>
+
+## CSS
+
+    .css
+    color: #000;
+
+---
+
+.cols.two.big-code
+
+# Nøsting (likt)
+
+<section>
+  <div class="col">
+
+## SASS
+
+    .scss
+    #pass {
+      &.paa {
+        .bruk > .av-nesting {
+          color: red;
+        }
+      }
+    }
+
+</div>
+<div class="col">
+
+## LESS
+
+    .less
+    #pass {
+      &.paa {
+        .bruk > .av-nesting {
+          color: red;
+        }
+      }
+    }
+  </div>
+</section>
+
+---
+
+.cols.two.big-code
+
+# Nøsting (likt)
+
+<section>
+  <div class="col">
+
+## SASS
+
+    .scss
+    #pass {
+      &.paa {
+        .bruk > .av-nesting {
+          color: red;
+        }
+      }
+    }
+
+</div>
+<div class="col">
+
+## LESS
+
+    .less
+    #pass {
+      &.paa {
+        .bruk > .av-nesting {
+          color: red;
+        }
+      }
+    }
+  </div>
+</section>
+
+## CSS
+
+    .css
+    /* kan gi veldig spesifikk selektor. Bruk med måte */
+    #pass.paa .bruk > .av-nesting { color: red; }
+
+---
+
+.cols.two
+
+# Mixins
+
+Don't Repeat Yourself:
+
+<section>
+  <div class="col">
+
+## SASS
+
+    .scss
+    @mixin border-radius ($radius: 5px) {
+      border-radius: $radius;
+      -moz-border-radius: $radius;
+      -webkit-border-radius: $radius;
+    }
+
+    .button {
+      @include border-radius(10px);
+    } 
+
+</div>
+<div class="col">
+
+## LESS
+
+    .less
+    .border-radius (@radius: 5px) {
+      border-radius: @radius;
+      -moz-border-radius: @radius;
+      -webkit-border-radius: @radius;
+    }
+
+    .button {
+      .border-radius(10px);
+    }
+  </div>
+</section>
+
+---
+
+.cols.two
+
+# Mixins
+
+Don't Repeat Yourself:
+
+<section>
+  <div class="col">
+
+## SASS
+
+    .scss
+    @mixin border-radius ($radius: 5px) {
+      border-radius: $radius;
+      -moz-border-radius: $radius;
+      -webkit-border-radius: $radius;
+    }
+
+    .button {
+      @include border-radius(10px);
+    } 
+
+</div>
+<div class="col">
+
+## LESS
+
+    .less
+    .border-radius (@radius: 5px) {
+      border-radius: @radius;
+      -moz-border-radius: @radius;
+      -webkit-border-radius: @radius;
+    }
+
+    .button {
+      .border-radius(10px);
+    }
+  </div>
+</section>
+
+## CSS
+
+    .css
+    .button {
+      border-radius: 10px;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px; 
+    }
+
+---
+
+.cols.two
+
+# Mixins
+
+Men pass på! Det kan bli veldig mye repeterende kode i ferdig CSS:
+
+<section>
+  <div class="col">
+
+## SASS (LESS)
+
+    .scss
+    @mixin border-radius ($radius: 5px) {
+      border-radius: $radius;
+      -moz-border-radius: $radius;
+      -webkit-border-radius: $radius;
+    }
+
+    .button {
+      @include border-radius(10px);
+    }
+
+    .menu {
+      @include border-radius(10px);
+    }
+
+    .sidebar {
+      @include border-radius(10px);
+    }
+
+</div>
+<div class="col">
+
+
+  </div>
+</section>
+
+---
+
+.cols.two
+
+# Mixins
+
+Men pass på! Det kan bli veldig mye repeterende kode i ferdig CSS:
+
+<section>
+  <div class="col">
+
+## SASS (LESS)
+
+    .scss
+    @mixin border-radius ($radius: 5px) {
+      border-radius: $radius;
+      -moz-border-radius: $radius;
+      -webkit-border-radius: $radius;
+    }
+
+    .button {
+      @include border-radius(10px);
+    }
+
+    .menu {
+      @include border-radius(10px);
+    }
+
+    .sidebar {
+      @include border-radius(10px);
+    }
+
+</div>
+<div class="col">
+
+## CSS
+
+    .css
+    .button {
+      border-radius: 10px;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px; }
+
+    .menu {
+      border-radius: 10px;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px; }
+
+    .sidebar {
+      border-radius: 10px;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px; }
+
+  </div>
+</section>
+
+---
+
+.cols.two
+
+# Mixins
+
+Dette er bedre:
+
+<section>
+  <div class="col">
+
+## SASS (LESS)
+
+    .scss
+    @mixin border-radius ($radius: 5px) {
+      border-radius: $radius;
+      -moz-border-radius: $radius;
+      -webkit-border-radius: $radius;
+    }
+
+    .button, .menu, .sidebar {
+      @include border-radius(10px);
+    }
+
+</div>
+<div class="col">
+
+
+  </div>
+</section>
+
+---
+
+.cols.two
+
+# Mixins
+
+Dette er bedre:
+
+<section>
+  <div class="col">
+
+## SASS (LESS)
+
+    .scss
+    @mixin border-radius ($radius: 5px) {
+      border-radius: $radius;
+      -moz-border-radius: $radius;
+      -webkit-border-radius: $radius;
+    }
+
+    .button, .menu, .sidebar {
+      @include border-radius(10px);
+    }
+
+</div>
+<div class="col">
+
+## CSS
+
+    .css
+    .button, .menu, .sidebar {
+      border-radius: 10px;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px; }
+
+
+  </div>
+</section>
+
+---
+
+# Konkatenering (likt)
+
+## Fra bootstrap.less -> bootstrap.css
+
+    .less
+    // CSS Reset
+    @import "reset.less";
+
+    // Core variables and mixins
+    @import "variables.less"; // Modify this for custom colors, font-sizes, etc
+    @import "mixins.less";
+
+    // Grid system and page structure
+    @import "scaffolding.less";
+    @import "grid.less";
+    @import "layouts.less";
+
+    // Base CSS
+    @import "type.less";
+    @import "code.less";
+    @import "forms.less";
+    @import "tables.less";
+
+    // Components: common
+    @import "sprites.less";
+    @import "dropdowns.less";
+    @import "wells.less";
+    @import "component-animations.less";
+    @import "close.less";
+
+---
+
+.middle.center
+# + og mer
+## Fargefunksjoner, matematiske operasjoner, (kontrollstrukturer)
+
+---
+
+.cols.two.big-code
+
+# Compass
+
+* rammeverk som bygger videre på SASS
+* `gem install compass`
+* mange ferdigdefinerte mixins
+* enda flere matematiske funksjoner
+
+## Eksempel: sprites
+
+<section>
+  <div class="col">
+
+Filstruktur
+
+![](gfx/sprites.png)
+
+
+</div>
+<div class="col">
+
+  SASS
+
+    .sass
+    @import "icons/*.png";
+    @include all-icons-sprites;
+
+
+
+  </div>
+</section>
+    
+
+---
+
+.big-code
+
+# Compass
+
+## Kompilerer til:
+
+    .css
+    .icons-sprite,
+    .icons-delete,
+    .icons-edit,
+    .icons-new,
+    .icons-save   { background: 
+        url('/images/icons-s34fe0604ab.png') no-repeat; }
+
+    .icons-delete { background-position: 0 0; }
+    .icons-edit   { background-position: 0 -32px; }
+    .icons-new    { background-position: 0 -64px; }
+    .icons-save   { background-position: 0 -96px; } 
+
+---
+
+.big-code
+
+# Compass
+
+![](gfx/cc-batmobile.jpg)
+
+<small class="attribution">["Batmobile"](http://www.flickr.com/photos/pmiaki/6768809117/) by psiaki (CC BY 2.0)</small>
+
+---
+
+.middle.center
+
+# Forskjeller
+## Få. Syntaks. SASS er kraftigere. LESS is more?
+
+Se også [SASS vs LESS](https://gist.github.com/674726)
+
+---
+
+.center
+
+![](gfx/cc-joker.jpg)
+<small class="attribution">["LEGO Super Heroes Batman Batwing Battle 02"](http://www.flickr.com/photos/57933043@N00/6628888415/in/photostream/) by cbcd04 (CC BY-ND 2.0)</small>
+
+---
+
+# Drawbacks
+
 * Noe mer komplekst utviklingsmiljø (og byggmiljø)
+* En ny abstraksjon
+* Kan miste kontroll over filstørrelse ved uheldig bruk av mixins
+* Kan få for spesifikke selektorer/store filer ved overdreven bruk av nøsting
 * Ikke gitt at det lønner seg i veldig små prosjekter
+* Kan være vanskeligere å debugge generert CSS
+  * `sass main.scss --line-numbers`
+  * klassenavn man kan finne igjen
 
 ---
 
-.fullscreen.center
+.fullscreen.middle
 
 # Å kommunisere CSS
-
-TODO: bekk style på fullscreen-bilder
 
 ![Love documentation](gfx/cc-book.jpg)
 
@@ -1162,34 +2001,6 @@ TODO: bekk style på fullscreen-bilder
 mads.mobaek@bekk.no / @madsmobaek
 
 ---
-
-# TODO: Skal klassenavn være semantiske?
-
-http://nicolasgallagher.com/about-html-semantics-front-end-architecture/
-
-Semantisk HTML eller CSS? (microformats, HTML5). Er det noen vits?
-  * http://coding.smashingmagazine.com/2011/11/11/our-pointless-pursuit-of-semantic-value/
-  * http://coding.smashingmagazine.com/2011/11/12/pursuing-semantic-value/
-  * Semantikkens verdi sammen med JS
-
-## W3C HTML5 spec
-"authors are encouraged to use values that describe the nature of the content, rather than values that describe the desired presentation of the content"
-
-## OOCSS
-"OOCSS can be written in a semantic or non-semantic way, it is up to you to create modules like errorMod rather than bigRedModule"
-
----
-
-http://csswizardry.com/2012/06/the-open-closed-principle-applied-to-css/
-JS-hooks
-Bootstrap
-HTML5 elementer
-http://smacss.com/book/html5
-http://www.justinmarsan.com/blog/researches/2012/04/21/css-methodology-oocss-bem-smacss/
-http://lea.verou.me/2011/03/on-css-preprocessors/
-http://www.slideshare.net/stubbornella/our-best-practices-are-killing-us
-http://coding.smashingmagazine.com/2012/06/19/classes-where-were-going-we-dont-need-classes/
-http://coding.smashingmagazine.com/2012/04/20/decoupling-html-from-css/
 
       </textarea>
     <div id="slideshow"></div>
