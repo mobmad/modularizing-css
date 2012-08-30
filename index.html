@@ -60,7 +60,7 @@ Mads Mobæk
 * Hvorfor modularisere?
 * CSS refresher
 * Tankesett <span class="alt">OOCSS, BEM og SMACSS</span>
-* Ytelse
+* Kort om ytelse
 * Litt om preprocessors <span class="alt">SASS / LESS</span>
 * Å kommunisere CSS til andre
 
@@ -338,6 +338,8 @@ Fortsatt forvirret? [http://www.maxdesign.com.au/articles/css-cascade/](http://w
 
 ---
 
+.big-code
+
 # Depth of applicability
 
 "HTML is like a tree structure of parents and children. The depth of applicability is the number of generations that are affected by a given rule." - [SMACSS](http://smacss.com/book/applicability)
@@ -350,6 +352,8 @@ Vanskelig å gjenbruke og mindre motstandsdyktig mot endringer
     .sidebar .links ul > li a
 
 ---
+
+.big-code 
 
 # Depth of applicability
 
@@ -368,8 +372,6 @@ Enklere å gjenbruke!
     .css
     /* Depth of applicability = 2 */
     .list-item a
-
-Drawback? Potensielt flere klasser i HTML
 
 ---
 
@@ -615,8 +617,8 @@ I tillegg vil dette gjøre at man ikke trenger å overstyre stiler når man øns
 Gjør det enkelt å overstyre stiler. Da er det kun rekkefølgen ting lastes i som styrer:
 
     .css
-    .module .hd {}
-    .module2 .hd {}
+    .module .hd {} /* default.css */
+    .module .hd {} /* skin.css */
 
 ## Encapsulation
 Ikke stil innhold i moduler utenfra:
@@ -736,7 +738,35 @@ I praksis betyr det å lage en ny klasse med spesialiseringen, f.eks: `menu__ite
   * unike klassenavn
   * type-selektorer (` .someBlock h1`) benyttes ikke, da de ikke er "context-free"
   * skal kunne brukes flere ganger. ID selektorer er derfor ikke tillatt
-* CSS-klasser navngis f.eks. med `block__element` for å unngå cascading. Gir også verktøystøtte:
+
+---
+
+.big-code
+
+# Prinsipper
+
+* Blokker er uavhengig. Skal kunne plasseres hvor som helst, inkludert inne i en annen blokk
+  * unike klassenavn
+  * type-selektorer (` .someBlock h1`) benyttes ikke, da de ikke er "context-free"
+  * skal kunne brukes flere ganger. ID selektorer er derfor ikke tillatt
+* CSS-klasser navngis f.eks. med `menu__item` for å unngå cascading. Gir også verktøystøtte:
+
+
+    .javascript
+    // JS:
+    Block('menu').elem('item').setMod('state', 'current');
+
+---
+
+.big-code
+
+# Prinsipper
+
+* Blokker er uavhengig. Skal kunne plasseres hvor som helst, inkludert inne i en annen blokk
+  * unike klassenavn
+  * type-selektorer (` .someBlock h1`) benyttes ikke, da de ikke er "context-free"
+  * skal kunne brukes flere ganger. ID selektorer er derfor ikke tillatt
+* CSS-klasser navngis f.eks. med `menu__item` for å unngå cascading. Gir også verktøystøtte:
 
 
     .javascript
@@ -841,7 +871,7 @@ Stiling av innholdet i en modul er namespacet med modulens navn:
     /* Innholdet kan være stilet med
       - andre klasser: `.sidebar-header`, `.article-count`
       - child-selector: `.navigation > li` */
-    .exm-caption { /* evt: .exm > h2 */
+    .exm-title { /* evt: .exm > h2 */
         padding: 5px 10px;
         margin: 0;
         background-color: rgba(51, 153, 204, 0.3);
@@ -1092,105 +1122,12 @@ Ved å minimere cascading og bruk av spesifikke selektorer
 
 <small class="attribution">["Night train"](http://www.flickr.com/photos/pagedooley/2394279602/) by Kevin Dooley (CC BY 2.0)</small>
 
-
----
-
-# Størrelse
-
-Husk at:
-
-## HTML - caches sjelden
-Kanskje på statiske sider. Aldri for dynamiske sider.
-
----
-
-# Størrelse
-
-Husk at:
-
-## HTML - caches sjelden
-Kanskje på statiske sider. Aldri for dynamiske sider.
-
-## CSS - kan normalt caches 
-Etter første lasting og "aldri" hentes igjen:
-
-* Sett caching til opptil ett år
-* Bruk fingerprinting `8ad123faa2122compiled.css`. Ny CSS vil ha ny fingerprint og vil buste cache.
-
-[developers.google.com](https://developers.google.com/speed/docs/best-practices/caching)
-
----
-
-# gzip
-
-"Gzipping generally reduces the response size by about 70%. Approximately 90% of today's Internet traffic travels through browsers that claim to support gzip" - [yahoo](http://developer.yahoo.com/performance/rules.html)
-
----
-
-# gzip
-
-"Gzipping generally reduces the response size by about 70%. Approximately 90% of today's Internet traffic travels through browsers that claim to support gzip" - [yahoo](http://developer.yahoo.com/performance/rules.html)
-
-## GIEF CMPRSSD CNTNT PLZ (browser)
-![GZip request](gfx/gzip-request.png)
-
----
-
-# gzip
-
-"Gzipping generally reduces the response size by about 70%. Approximately 90% of today's Internet traffic travels through browsers that claim to support gzip" - [yahoo](http://developer.yahoo.com/performance/rules.html)
-
-## GIEF CMPRSSD CNTNT PLZ (browser)
-![GZip request](gfx/gzip-request.png)
-
-## 200 OK (server)
-![GZip response](gfx/gzip-response.png)
-
 ---
 
 .middle.center
 
-# Høres bra ut
-## Men hva med alle disse klassene i HTMLen?
-
----
-
-# La oss telle!
-
-## Hvor mange klasser finnes i HTMLen?
-
-    .bash
-    #!/bin/bash
-    # Counts the number of CSS classes in given input. Includes duplicates.
-    cat $1 \
-    | grep -Po 'class=\\?"?([-a-zA-Z0-9_ ]+)\\?"?'  \
-    | sed -E 's/class=\\?"?([-a-zA-Z0-9_ ]+)\\?"?/\1/g' \
-    | tr -s " " "\012" \
-    |wc -l \
-    |tr -d ' '
-
----
-
-# La oss telle!
-
-## Hvor mange klasser finnes i HTMLen?
-
-    .bash
-    #!/bin/bash
-    # Counts the number of CSS classes in given input. Includes duplicates.
-    cat $1 \
-    | grep -Po 'class=\\?"?([-a-zA-Z0-9_ ]+)\\?"?'  \
-    | sed -E 's/class=\\?"?([-a-zA-Z0-9_ ]+)\\?"?/\1/g' \
-    | tr -s " " "\012" \
-    |wc -l \
-    |tr -d ' '
-
-
-## Og hvordan ville den sett ut uten?
-
-    #!/bin/bash
-    # Removes all CSS class elements from given input
-    sed -E 's/class=\\?"?([-a-zA-Z0-9_ ]+)\\?"?//g' $1
+# Størrelsen?
+## gzip
 
 ---
 
@@ -1211,87 +1148,13 @@ Etter første lasting og "aldri" hentes igjen:
 
 ---
 
-.middle.center
-
-# Google plus newsfeed
-
-.big-code
-
-    .bash
-    googleplus.html         Uncompressed      Compressed
-    ----------------------------------------------------
-    Classes                      3735               0
-    Original                   295.86 kB        64.18 kB
-    Without classes            269.81 kB        61.84 kB
-    ----------------------------------------------------
-    Diff                        26.04 kB         2.34 kB
-
----
-
-.middle.center
-
-# Youtube forside
-
-.big-code
-
-    .bash
-    youtube.html            Uncompressed      Compressed
-    ----------------------------------------------------
-    Classes                      3482               0
-    Original                   223.19 kB        24.00 kB
-    Without classes            153.08 kB        21.14 kB
-    ----------------------------------------------------
-    Diff                        70.11 kB         2.86 kB
-
----
-
-.middle.center
-
-# Twitter newsfeed
-
-.big-code
-
-    .bash
-    twitter.html            Uncompressed      Compressed
-    ----------------------------------------------------
-    Classes                      1527               0
-    Original                   211.95 kB        32.85 kB
-    Without classes            184.37 kB        31.23 kB
-    ----------------------------------------------------
-    Diff                        27.58 kB         1.62 kB
-
----
-
-.middle.center
-
-# Google søkeresultat
-
-.big-code
-
-    .bash
-    google.html             Uncompressed      Compressed
-    ----------------------------------------------------
-    Classes                       208               0
-    Original                    98.61 kB        27.45 kB
-    Without classes             96.73 kB        27.12 kB
-    ----------------------------------------------------
-    Diff                         1.88 kB         0.33 kB
-
----
-
-.middle.center
-
-# Ait, men er det raskt for nettleseren?
-
----
-
 # Selektorytelse
 
 Hentet fra [Steve Souders / csswizardry](http://csswizardry.com/2011/09/writing-efficient-css-selectors/):
 
 1. ID `#header`
 2. Class `.promo`
-3. Type `div
+3. Type `div`
 4. Adjacent sibling `h2 + p`
 5. Child `li > ul`
 6. Descendant `ul a`
@@ -1378,6 +1241,7 @@ Hentet fra [Steve Souders / csswizardry](http://csswizardry.com/2011/09/writing-
 * Gir deg muligheter CSS ikke har enda, f.eks. variabler ([enda](http://www.w3.org/TR/css-variables/))
 * Renere kildekode. Færre gjentakelser. DRY
 * Letter vedlikehold
+* Kan konkatenere filer
 * Kan (og bør) kompileres ned til en vanlig .css-fil ved bygging
 
 ---
@@ -1387,6 +1251,7 @@ Hentet fra [Steve Souders / csswizardry](http://csswizardry.com/2011/09/writing-
 * Gir deg muligheter CSS ikke har enda, f.eks. variabler ([enda](http://www.w3.org/TR/css-variables/))
 * Renere kildekode. Færre gjentakelser. DRY
 * Letter vedlikehold
+* Kan konkatenere filer
 * Kan (og bør) kompileres ned til en vanlig .css-fil ved bygging
 
 ## Noen alternativer
@@ -1438,6 +1303,7 @@ Hentet fra [Steve Souders / csswizardry](http://csswizardry.com/2011/09/writing-
 * Kan kompilere direkte i browser på klientside med less.js. Drawbacks:
   * Flere http requests
   * Kompileres i utgangspunktet hver gang
+  * Mulighet for browserbugs på JavaScript
 * Node.js / binærvarianter (m.fl.) kan minifisere på samme måte som SASS
 
 ---
@@ -2036,16 +1902,6 @@ Se også [SASS vs LESS](https://gist.github.com/674726)
 
 ---
 
-# Style docco - generator
-
-## Dokumenter CSSen og få generert dokumentasjon:
-
-![KSS](gfx/style-docco.png)
-
-[http://jacobrask.github.com/styledocco](http://jacobrask.github.com/styledocco)
-
----
-
 # Github styleguide
 
 ![Github styleguide](gfx/style-github.png)
@@ -2058,28 +1914,15 @@ Se også [SASS vs LESS](https://gist.github.com/674726)
 
 ![Github styleguide](gfx/style-github2.png)
 
-
 ---
 
-# Mailchimp
-
-![Mailchimp styleguide](gfx/style-mailchimp.png)
-
----
-
-# Mailchimp
-
-![Mailchimp styleguide](gfx/style-mailchimp2.png)
-
----
-
-# Twitter bootstrap
+# Bootstrap
 
 ![Twitter bootstrap](gfx/style-bootstrap.png)
 
 ---
 
-# Twitter bootstrap
+# Bootstrap
 
 ![Twitter bootstrap](gfx/style-bootstrap2.png)
 
