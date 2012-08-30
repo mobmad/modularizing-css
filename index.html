@@ -14,6 +14,7 @@
       .slide p { padding: 0; margin: 1.1em 0; }
       .slide ul { padding: 0; margin: 1.1em 0; }
       .slide img { max-width: 100%; max-height: 600px; }
+      .slide { font-size: 1.1em; }
       .slide .big { font-size: 4em; }
 
       #slideshow .slide .content ul li { padding-left: 1.3em; }
@@ -27,9 +28,11 @@
       #slideshow .slide .content.cols.two .col { width: 45%; margin-right: 10%;}
       #slideshow .slide .content.cols .col:last-child { margin-right: 0; }
       #slideshow .slide .content.big-code code { font-size: 1.5em; }
+      #slideshow .slide .content.agenda ul li { padding: 0.5em 0;}
 
       #slideshow .slide > .bottom { vertical-align: bottom; }
 
+      .slide ul { margin: 0.5em 0;}
       .slide span.alt { color:#FD5158; }
       .jquery { background-color: #1E2837; }
       .nodejs { background-color: #3F4239; }
@@ -88,17 +91,17 @@ Mads Mobæk
 
 ---
 
-.middle.center
-
-# mod·u·lar·ize
-## to form or organize into modules, as for flexibility.
-
----
-
 .fullscreen
 
 ![Modularisering](gfx/cc-lego.jpeg)
 <small class="attribution">["Lego White House Kit"](http://www.flickr.com/photos/mr_t_in_dc/4765644259/) by Mr. T in DC (CC BY-ND 2.0)</small>
+
+---
+
+.middle.center
+
+# mod·u·lar·ize
+## to form or organize into modules, as for flexibility.
 
 ---
 
@@ -159,7 +162,7 @@ Samtidig bør ferdig CSS gi god ytelse for sluttbruker:
 * type                <span class="alt">div</span>
 * id                  <span class="alt">#header</span>
 * class               <span class="alt">.amount</span>
-* attribute           <span class="alt">input[type=text]</span>
+* attribute           <span class="alt">input[type="text"]</span>
 * pseudo-klasser      <span class="alt">:nth-child</span>
 * pseudo-elementer    <span class="alt">::before</span>
 * descendant          <span class="alt">div p</span>
@@ -316,7 +319,7 @@ Gi selektorene en score basert på hvor spesifikke de er:
     .no-highlight
     style.css:
     -------------------------------------------------------------------
-    p                    /* a=0 b=0 c=0 d=2 -> specificity = 0,0,0,1 */
+    p                    /* a=0 b=0 c=0 d=1 -> specificity = 0,0,0,1 */
     section.featured p   /* a=0 b=0 c=1 d=2 -> specificity = 0,0,1,2 */
 
     theme.css:
@@ -452,6 +455,10 @@ Nicole Sullivan
 
 "Basically, a CSS “object” is a repeating visual pattern, which can be abstracted into an independent snippet of HTML, CSS, and possibly JavaScript. Once created, an object can then be reused throughout a site." (OOCSS wiki)
 
+---
+
+# OOCSS
+
 ## Har både [prinsipper](https://github.com/stubbornella/oocss/wiki) og en [implementasjon](https://github.com/stubbornella/oocss)
 
 * Hovedprinsipper:
@@ -460,6 +467,45 @@ Nicole Sullivan
 * Implementasjon
   * Laget for å [extendes](http://csswizardry.com/2012/06/the-open-closed-principle-applied-to-css/)
   * Enkelte komponenter er ferdig (grid, modules) andre eksperimentelle (tabs, media object)
+
+---
+
+.cols.two 
+
+# Separer struktur og skin
+
+Struktur: `mod`, `top`, `inner`, `bd`, `bottom`
+
+Skin: `grab`, `simple`, `simpleExt`
+
+<section>
+<div class="col">
+
+    .html
+    <div class="mod grab"> 
+      <b class="top"></b>
+      <div class="inner">
+        <img src=".." class="img" />
+      </div>
+      <b class="bottom"></b> 
+    </div>
+
+
+    <div class="mod simpleExt"> 
+      ... 
+    </div>
+
+
+    <div class="mod simple"> 
+      ... 
+    </div>
+</div>
+
+<div class="col">
+
+![OOCSS modul - eksempel](gfx/oocss-module.png)
+</div>
+</section>
 
 ---
 
@@ -515,15 +561,47 @@ I stedet for å stile elementer (containere) direkte:
     .css
     .fancyObject h2 {}
 
+---
+
+.big-code
+
+# Separate container and content
+
+Et objekt bør se likt ut uansett hvor man putter det. 
+
+I stedet for å stile elementer (containere) direkte:
+
+    .css
+    .fancyObject h2 {}
+
 Så oppfordres man til å i stedet skrive:
 
     .html
-    <h2 class="fancy">...</h2>
+    <h2 class="fancy-title">...</h2>
+
+
+---
+
+.big-code
+
+# Separate container and content
+
+Et objekt bør se likt ut uansett hvor man putter det. 
+
+I stedet for å stile elementer (containere) direkte:
+
+    .css
+    .fancyObject h2 {}
+
+Så oppfordres man til å i stedet skrive:
+
+    .html
+    <h2 class="fancy-title">...</h2>
 
 Og lage en beskrivende klasse:
 
     .css
-    .fancy {}
+    .fancy-title {}
 
 I tillegg vil dette gjøre at man ikke trenger å overstyre stiler når man ønsker at en `<h2>` inne i ` .fancyObject h2` skal se ut som en vanlig `<h2>`
 
@@ -576,35 +654,27 @@ Gjenbrukbar komponent. Kan nøstes.
 
 ---
 
+.big-code 
+
 # Element
 Bestanddelene til en blokk:
 
 ![Element](gfx/bem-search-elements.png)
 
----
-
-# BEM tree
-
-Blokker og elementer defineres i et BEM tree, som kan være XML, JSON eller annet format som støtter nøsting:
+## BEM tree 
+Representasjon. XML/JSON via XSL/JS til HTML/CSS
 
     .json
     {
-      elem: 'column',
+      block: 'search',
       content: [
+        { elem: 'input' },
         {
-          block: 'search',
-          content: [
-            { elem: 'input' },
-            {
-              elem: 'button',
-              content: 'Search'
-            }
-          ]
+          elem: 'button',
+          content: 'Search'
         }
       ]
     }
-
-Ferdig HTML genereres så ved XSL / JavaScript ved hjelp av en "template". Alle blokker har en tilhørende template.
 
 ---
 
@@ -640,8 +710,6 @@ I praksis betyr det å lage en ny klasse med spesialiseringen, f.eks: `menu__ite
 
 # Blokk #2
 
-En blokk består alltid av templates (XSL/JavaScript) og CSS, samt JavaScript og bilder om nødvendig. 
-
 ## Eksempel på filstruktur:
 
     .no-highlight
@@ -666,16 +734,8 @@ En blokk består alltid av templates (XSL/JavaScript) og CSS, samt JavaScript og
 
 * Blokker er uavhengig. Skal kunne plasseres hvor som helst, inkludert inne i en annen blokk
   * unike klassenavn
-  * tag-selektorer (` .someBlock h1`) benyttes ikke, da de ikke er "context-free"
+  * type-selektorer (` .someBlock h1`) benyttes ikke, da de ikke er "context-free"
   * skal kunne brukes flere ganger. ID selektorer er derfor ikke tillatt
-* Gitt at det finnes flere blokker på siden vil de dele samme klasse `.someBlock` og JavaScript-oppførselen kan derfor gis til alle blokker samtidig
-
----
-
-.big-code
-
-# Prinsipper
-
 * CSS-klasser navngis f.eks. med `block__element` for å unngå cascading. Gir også verktøystøtte:
 
 
@@ -684,10 +744,6 @@ En blokk består alltid av templates (XSL/JavaScript) og CSS, samt JavaScript og
     Block('menu').elem('item').setMod('state', 'current');
 
 * Har en byggeprosess hvor alt en blokk består av bygges og kommer ut som en produksjonsklar versjon med minifisert CSS/JS m.m.
-* Yandex har egne team som jobber på hvert sitt område:
-  * Core = verktøystøtte, ytelse
-  * Library = bygge/vedlikeholde komponenter
-  * Developers = bruker ferdig bibliotek
 
 ---
 
@@ -866,7 +922,7 @@ Utgangspunktet er at states skal kunne brukes i alle moduler/layouts. Hvis state
 # Alternativ til is-convensjon   
 
     .css
-    .message[data-state=hidden] {
+    . message[data-state=hidden] {
         display: none;
     }
 
@@ -894,17 +950,15 @@ Et alternativ kan være å bruke en CSS preprocessor som SASS/LESS
 
     .no-highlight
     +-layout/
-     | +-grid.scss
-     | +-alternate.scss
+     | +-grid.css
+     | +-alternate.css
      +-module/
-     | +-callout.scss
-     | +-bookmarks.scss
-     | +-btn.scss
-     | +-btn-compose.scss
-     +-base.scss
-     +-states.scss
-     +-site-settings.scss
-     +-mixins.scss
+     | +-callout.css
+     | +-bookmarks.css
+     | +-btn.css
+     | +-btn-compose.css
+     +-base.css
+     +-states.css
 
 ---
 
@@ -971,12 +1025,6 @@ Ekstremt populært:
 
 # Bootstrap
 
-![](gfx/bootstrap-thumbs.png)
-
----
-
-# Bootstrap
-
 ![](gfx/bootstrap-messages.png)
 
 ---
@@ -995,7 +1043,7 @@ Objekt ~ Block ~ Module
 ---
 
 .middle.center
-# Lag subklaser ~ modifers ~ submoduler
+# Lag subklasser ~ modifiers ~ submoduler
 ## Som kun tar for seg deklarasjonene som må overstyres
 
 ---
@@ -1403,11 +1451,12 @@ Hentet fra [Steve Souders / csswizardry](http://csswizardry.com/2011/09/writing-
 * Kan kompilere direkte i browser på klientside med less.js. Drawbacks:
   * Flere http requests
   * Kompileres i utgangspunktet hver gang
+  * Mulighet for browserbugs på JavaScript
 * Node.js / binærvarianter (m.fl.) kan minifisere på samme måte som SASS
 
 
     .bash
-    # -x    minify
+    # -x  minify
     lessc style.less > style.css -x
 
 ---
