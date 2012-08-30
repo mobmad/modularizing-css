@@ -18,20 +18,23 @@
 
       #slideshow .slide .content ul li { padding-left: 1.3em; }
       #slideshow .slide .attr a { color:#333; font-size:0.8em; }
-      #slideshow .slide .fullscreen img { max-width:100%; max-height:100%; position:absolute; top:40px; left:0; }
+      #slideshow .slide .fullscreen img { max-width:100%; max-height:100%; position:absolute; top:0; left:0; }
       #slideshow .slide .content.fullscreen h1 { background: #FD5158; display:table; padding: 20px; border-radius: 50%; width:250px; height: 250px; text-align: center; }
       #slideshow .slide .content.fullscreen.center h1 { margin: 0 auto; }
+      #slideshow .slide .content.fullscreen.right h1 { margin: 0 0 0 auto; }
       #slideshow .slide .content.fullscreen h1 > span { padding: 10px; display:table-cell; background:transparent; vertical-align:middle; padding:0; color: #000;}
       #slideshow .slide .content.cols.two section { overflow: hidden; }
       #slideshow .slide .content.cols.two .col { width: 45%; margin-right: 10%;}
       #slideshow .slide .content.cols .col:last-child { margin-right: 0; }
       #slideshow .slide .content.big-code code { font-size: 1.5em; }
 
+      #slideshow .slide > .bottom { vertical-align: bottom; }
+
       .slide span.alt { color:#FD5158; }
       .jquery { background-color: #1E2837; }
       .nodejs { background-color: #3F4239; }
       #slideshow .position { display: none; }
-      .attribution { position: absolute; bottom: 10px; left: 30px; opacity: 0.5; }
+      .attribution { position: absolute; bottom: 10px; left: 30px; opacity: 0.5; color: #999; }
     </style>
   </head>
   <body>
@@ -112,7 +115,7 @@ Modularisert slik at det er enkelt å:
 * sette seg inn i for andre
 * jobbe på i et team
 
-![Deler](gfx/cc-lego-parts.jpeg)
+![Deler](gfx/cc-lego-parts.png)
 
 </div>
 <div class="col">
@@ -130,10 +133,14 @@ Samtidig bør ferdig CSS gi god ytelse for sluttbruker:
 
 ---
 
-.middle.center
+.fullscreen.bottom.right
 
-# CSS
-## Refresher
+# CSS refresher
+
+![](gfx/cc-bus.png)
+
+<small class="attribution">["Lunar School Bus - Front"](http://www.flickr.com/photos/billward/2854447026/) by Bill Ward (CC BY 2.0)</small>
+
 
 ---
 
@@ -416,9 +423,12 @@ Regler matches fra høyre mot venstre
 
 ---
 
-.agenda
+.agenda.right
 
 # Hva har andre tenkt rundt modularisering?
+
+![](gfx/cc-geek.png)
+<small class="attribution">["Lego geek"](http://www.flickr.com/photos/threephin/7511910054/in/photostream/) by threephin (CC BY-SA 2.0)</small>
 
 * OOCSS     <span class="alt">Object Oriented CSS</span>
 * BEM       <span class="alt">Block, Element, Modifier</span>
@@ -650,6 +660,8 @@ En blokk består alltid av templates (XSL/JavaScript) og CSS, samt JavaScript og
 
 ---
 
+.big-code
+
 # Prinsipper
 
 * Blokker er uavhengig. Skal kunne plasseres hvor som helst, inkludert inne i en annen blokk
@@ -660,13 +672,16 @@ En blokk består alltid av templates (XSL/JavaScript) og CSS, samt JavaScript og
 
 ---
 
+.big-code
+
 # Prinsipper
 
 * CSS-klasser navngis f.eks. med `block__element` for å unngå cascading. Gir også verktøystøtte:
 
 
     .javascript
-    Block('menu').elem('item').setMod('state', 'current'); // JS
+    // JS:
+    Block('menu').elem('item').setMod('state', 'current');
 
 * Har en byggeprosess hvor alt en blokk består av bygges og kommer ut som en produksjonsklar versjon med minifisert CSS/JS m.m.
 * Yandex har egne team som jobber på hvert sitt område:
@@ -1029,6 +1044,16 @@ Ved å minimere cascading og bruk av spesifikke selektorer
 
 <small class="attribution">["Night train"](http://www.flickr.com/photos/pagedooley/2394279602/) by Kevin Dooley (CC BY 2.0)</small>
 
+
+---
+
+# Størrelse
+
+Husk at:
+
+## HTML - caches sjelden
+Kanskje på statiske sider. Aldri for dynamiske sider.
+
 ---
 
 # Størrelse
@@ -1058,7 +1083,7 @@ Etter første lasting og "aldri" hentes igjen:
 
 "Gzipping generally reduces the response size by about 70%. Approximately 90% of today's Internet traffic travels through browsers that claim to support gzip" - [yahoo](http://developer.yahoo.com/performance/rules.html)
 
-## GIEF CMPRSSD CONTNT PLZ (browser)
+## GIEF CMPRSSD CNTNT PLZ (browser)
 ![GZip request](gfx/gzip-request.png)
 
 ---
@@ -1067,7 +1092,7 @@ Etter første lasting og "aldri" hentes igjen:
 
 "Gzipping generally reduces the response size by about 70%. Approximately 90% of today's Internet traffic travels through browsers that claim to support gzip" - [yahoo](http://developer.yahoo.com/performance/rules.html)
 
-## GIEF CMPRSSD CONTNT PLZ (browser)
+## GIEF CMPRSSD CNTNT PLZ (browser)
 ![GZip request](gfx/gzip-request.png)
 
 ## 200 OK (server)
@@ -1251,13 +1276,6 @@ Hentet fra [Steve Souders / csswizardry](http://csswizardry.com/2011/09/writing-
 # Konklusjon
 
 ## Ikke vær redd for å bruke klasser
-
----
-
-.middle.center
-
-![](gfx/cc-geek.jpg)
-<small class="attribution">["Lego geek"](http://www.flickr.com/photos/philhawksworth/5356021956/in/photostream/) by Phil Hawksworth (CC BY 2.0)</small>
 
 ---
 
@@ -1886,11 +1904,35 @@ Filstruktur
 
 ---
 
-.big-code
+# .batmobile
 
-# Compass
+![](gfx/cc-batmobile-color.png)
 
-![](gfx/cc-batmobile.jpg)
+<small class="attribution">["Batmobile"](http://www.flickr.com/photos/pmiaki/6768809117/) by psiaki (CC BY 2.0)</small>
+
+---
+
+.fullscreen.middle.center
+
+# Does it come in black?
+
+![](gfx/cc-batman.jpg)
+<small class="attribution">["LEGO Super Heroes Batman Batwing Battle 01"](http://www.flickr.com/photos/57933043@N00/6628887517/in/photostream/) by cbcd04 (CC BY-ND 2.0)</small>
+
+---
+
+# .batmobile
+
+![](gfx/cc-batmobile-color.png)
+
+<small class="attribution">["Batmobile"](http://www.flickr.com/photos/pmiaki/6768809117/) by psiaki (CC BY 2.0)</small>
+
+
+---
+
+# .batmobile .batmobile-primary
+
+![](gfx/cc-batmobile.png)
 
 <small class="attribution">["Batmobile"](http://www.flickr.com/photos/pmiaki/6768809117/) by psiaki (CC BY 2.0)</small>
 
