@@ -47,7 +47,7 @@
 
 # Modularisering av CSS
 
-BEKK fagdag 31.08.2012
+Trondheim Developer Conference 29.10.2012
 
 Mads Mobæk
 
@@ -59,10 +59,8 @@ Mads Mobæk
 
 * Hvorfor modularisere?
 * CSS refresher
-* Tankesett <span class="alt">OOCSS, BEM og SMACSS</span>
-* Kort om ytelse
+* Tankesett <span class="alt">OOCSS og SMACSS</span>
 * Litt om preprocessors <span class="alt">SASS / LESS</span>
-* Å kommunisere CSS til andre
 
 ---
 
@@ -436,8 +434,8 @@ Regler matches fra høyre mot venstre
 <small class="attribution">["Lego geek"](http://www.flickr.com/photos/threephin/7511910054/in/photostream/) by threephin (CC BY-SA 2.0)</small>
 
 * OOCSS     <span class="alt">Object Oriented CSS</span>
-* BEM       <span class="alt">Block, Element, Modifier</span>
 * SMACSS    <span class="alt">Scalable and Modular Architecture for CSS</span>
+* (BEM)       <span class="alt">Block, Element, Modifier</span>
 
 ---
 
@@ -631,162 +629,6 @@ Ikke stil innhold i moduler utenfra:
 
 .middle.center
 
-# BEM
-## Block, Element, Modifier
-Fra Yandex (største søkemotor og mest besøkte side i Russland)
-
-[http://bem.github.com/bem-method](http://bem.github.com/bem-method/pages/beginning/beginning.en.html)
-
----
-
-# BEM
-
-* Mer enn CSS. Går også inn på templates, JavaScript m.m.
-* Har også et [eget repo](https://github.com/bem/bem-tools) med verktøy (kommandolinje scaffolding, bygging)
-* For store organisasjoner 
-* Langsiktighet
-
----
-
-# Blokk
-
-Gjenbrukbar komponent. Kan nøstes.
-
-![Blokk](gfx/bem-head-block.png)
-
----
-
-.big-code 
-
-# Element
-Bestanddelene til en blokk:
-
-![Element](gfx/bem-search-elements.png)
-
-## BEM tree 
-Representasjon. XML/JSON via XSL/JS til HTML/CSS
-
-    .json
-    {
-      block: 'search',
-      content: [
-        { elem: 'input' },
-        {
-          elem: 'button',
-          content: 'Search'
-        }
-      ]
-    }
-
----
-
-# Modifier
-
-For å lage spesialiseringer av blokker og elementer.
-
-![Element modifier](gfx/bem-element-modifier.png)
-
-I praksis betyr det å lage en ny klasse med spesialiseringen, f.eks: `menu__item_state_current`
-
-    .html
-    <div class="menu">
-      <ul class="menu__layout">
-        <li class="menu__layout-unit">
-          <div class="menu__item">Tab 1</div>
-        </li>
-        <li class="menu__layout-unit">
-          <div class="menu__item">Tab 2</div>
-        </li>
-        <li class="menu__layout-unit">
-          <div class="menu__item menu__item_state_current">Tab 3</div>
-        </li>
-        <li class="menu__layout-unit">
-          <div class="menu__item">Tab 4</div>
-        </li>
-      </ul>
-    </div>
-
----
-
-.big-code
-
-# Blokk #2
-
-## Eksempel på filstruktur:
-
-    .no-highlight
-    blocks/
-      menu/
-        __item/
-          _state/
-            menu__item_state_current.css
-            menu__item_state_current.xsl
-          menu__item.css
-          menu__item.xsl
-        menu.css
-        menu.js
-        menu.xsl
-      search/
-
----
-
-.big-code
-
-# Prinsipper
-
-* Blokker er uavhengig. Skal kunne plasseres hvor som helst, inkludert inne i en annen blokk
-  * unike klassenavn
-  * type-selektorer (` .someBlock h1`) benyttes ikke, da de ikke er "context-free"
-  * skal kunne brukes flere ganger. ID selektorer er derfor ikke tillatt
-
----
-
-.big-code
-
-# Prinsipper
-
-* Blokker er uavhengig. Skal kunne plasseres hvor som helst, inkludert inne i en annen blokk
-  * unike klassenavn
-  * type-selektorer (` .someBlock h1`) benyttes ikke, da de ikke er "context-free"
-  * skal kunne brukes flere ganger. ID selektorer er derfor ikke tillatt
-* CSS-klasser navngis f.eks. med `menu__item` for å unngå cascading. Gir også verktøystøtte:
-
-
-    .javascript
-    // JS:
-    Block('menu').elem('item').setMod('state', 'current');
-
----
-
-.big-code
-
-# Prinsipper
-
-* Blokker er uavhengig. Skal kunne plasseres hvor som helst, inkludert inne i en annen blokk
-  * unike klassenavn
-  * type-selektorer (` .someBlock h1`) benyttes ikke, da de ikke er "context-free"
-  * skal kunne brukes flere ganger. ID selektorer er derfor ikke tillatt
-* CSS-klasser navngis f.eks. med `menu__item` for å unngå cascading. Gir også verktøystøtte:
-
-
-    .javascript
-    // JS:
-    Block('menu').elem('item').setMod('state', 'current');
-
-* Har en byggeprosess hvor alt en blokk består av bygges og kommer ut som en produksjonsklar versjon med minifisert CSS/JS m.m.
-
----
-
-# BEM definition levels
-
-Enterprise-ready. Lagt opp til å kunne lage en felles standard for hele organisasjonen, som kan overstyres på prosjektnivå om nødvendig. 
-
-![BEM levels](gfx/bem-levels.png)
-
----
-
-.middle.center
-
 # SMACSS
 ## Scalable and Modular Architecture for CSS
 Johnatan Snook - Yahoo
@@ -797,7 +639,7 @@ Johnatan Snook - Yahoo
 
 # SMACSS
 
-* Har i motsetning til OOCSS og BEM ingen "referanseimplementasjon"
+* Har i motsetning til OOCSS ingen "referanseimplementasjon"
 * Deler inn i fem kategorier:
   * Base
   * Layout
@@ -1105,95 +947,6 @@ Ved å minimere cascading og bruk av spesifikke selektorer
 
 # Klasser er tingen
 ## Bruk ID-selektorer kun på det som virkelig er unikt. Unngå tag-selektorer da det lager tettere avhengighet til HTML.
-
----
-
-.middle.center
-
-# Men hva med...
-
----
-
-.fullscreen.center.middle
-
-# Ytelsen?
-
-![Night train](gfx/cc-speed.jpg)
-
-<small class="attribution">["Night train"](http://www.flickr.com/photos/pagedooley/2394279602/) by Kevin Dooley (CC BY 2.0)</small>
-
----
-
-.middle.center
-
-# Størrelsen?
-## gzip
-
----
-
-.middle.center
-
-# Facebook (newsfeed)
-
-.big-code
-
-    .bash
-    facebook.html           Uncompressed      Compressed
-    ----------------------------------------------------
-    Classes                      5849               0
-    Original                   470.40 kB        82.15 kB
-    Without classes            371.34 kB        71.60 kB
-    ----------------------------------------------------
-    Diff                        99.06 kB        10.55 kB
-
----
-
-# Selektorytelse
-
-Hentet fra [Steve Souders / csswizardry](http://csswizardry.com/2011/09/writing-efficient-css-selectors/):
-
-1. ID `#header`
-2. Class `.promo`
-3. Type `div`
-4. Adjacent sibling `h2 + p`
-5. Child `li > ul`
-6. Descendant `ul a`
-7. Universal `*`
-8. Attribute `[type="text"]`
-9. Pseudo-classes/-elements `a:hover`
-
----
-
-# Selektorytelse
-
-Hentet fra [Steve Souders / csswizardry](http://csswizardry.com/2011/09/writing-efficient-css-selectors/):
-
-1. ID `#header`
-2. Class `.promo`
-3. Type `div
-4. Adjacent sibling `h2 + p`
-5. Child `li > ul`
-6. Descendant `ul a`
-7. Universal `*`
-8. Attribute `[type="text"]`
-9. Pseudo-classes/-elements `a:hover`
-
-## "The difference in speed between an ID and a class is almost totally irrelevant."
-
----
-
-.middle.center
-
-# Konklusjon
-
-## Ikke vær redd for å bruke klasser
-
----
-
-.middle.center
-
-# Ytelse som betyr noe
-## Antall HTTP-requests
 
 ---
 
@@ -1879,52 +1632,6 @@ Se også [SASS vs LESS](https://gist.github.com/674726)
 * Kan være vanskeligere å debugge generert CSS
   * `sass main.scss --line-numbers`
   * klassenavn man kan finne igjen
-
----
-
-.fullscreen.middle
-
-# Å kommunisere CSS
-
-![Love documentation](gfx/cc-book.jpg)
-
-<small class="attribution">["Love books, Love everything"](http://www.flickr.com/photos/denisakadlecova/6052588218/) by Denisa Kadlecova (CC BY 2.0)</small>
-
----
-
-# KSS - generator
-
-## Dokumenter CSSen og få generert dokumentasjon:
-
-![KSS](gfx/style-kss.png)
-
-[http://warpspire.com/kss](http://warpspire.com/kss)
-
----
-
-# Github styleguide
-
-![Github styleguide](gfx/style-github.png)
-
-[https://github.com/styleguide/css](https://github.com/styleguide/css)
-
----
-
-# Github styleguide
-
-![Github styleguide](gfx/style-github2.png)
-
----
-
-# Bootstrap
-
-![Twitter bootstrap](gfx/style-bootstrap.png)
-
----
-
-# Bootstrap
-
-![Twitter bootstrap](gfx/style-bootstrap2.png)
 
 ---
 
