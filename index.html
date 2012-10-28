@@ -58,7 +58,6 @@ Mads Mobæk
 # Agenda
 
 * Hvorfor modularisere?
-* CSS refresher
 * Tankesett <span class="alt">OOCSS og SMACSS</span>
 * Litt om preprocessors <span class="alt">SASS / LESS</span>
 
@@ -134,298 +133,6 @@ Samtidig bør ferdig CSS gi god ytelse for sluttbruker:
 
 ---
 
-.fullscreen.bottom.right
-
-# CSS refresher
-
-![](gfx/cc-bus.png)
-
-<small class="attribution">["Lunar School Bus - Front"](http://www.flickr.com/photos/billward/2854447026/) by Bill Ward (CC BY 2.0)</small>
-
-
----
-
-.middle.center
-
-# Cascading Style Sheets
-
----
-
-.agenda
-
-# Selektorer (utvalg)
-
-
-* universal           <span class="alt">*</span>
-* type                <span class="alt">div</span>
-* id                  <span class="alt">#header</span>
-* class               <span class="alt">.amount</span>
-* attribute           <span class="alt">input[type="text"]</span>
-* pseudo-klasser      <span class="alt">:nth-child</span>
-* pseudo-elementer    <span class="alt">::before</span>
-* descendant          <span class="alt">div p</span>
-* child               <span class="alt">div > p</span>
-
----
-
-.middle.center
-
-# Cascading?
-
----
-
-.middle.center
-
-## "The process of combining several style sheets and resolving conflicts between them."
-
-Håkon Wium Lie 
-
-[http://people.opera.com/howcome/2006/phd/#cascading](http://people.opera.com/howcome/2006/phd/#cascading)
-
----
-
-# Cascading - med konflikt
-
-CSS
-
-    .css
-    /* ----------- user agent ----------- */
-    p {
-      color:      black;
-      font-size:  12px;
-    }
-
-    /* --- default.css (lastet først) --- */
-    p { 
-      color:      grey; 
-    }
-
-    section.featured p { 
-      color:      red; 
-    }
-
-    /* --- theme.css (lastet sist) ----- */
-    
-    section.featured p { 
-      color:      blue; 
-    }
-
-HTML
-
-    .html
-    <section class="featured">
-        <p>BEKK</p>
-    </section>
-
----
-
-# Cascade rekkefølge
-
-    .css
-    /* ----------- user agent ----------- */
-    p {
-      color:      black;
-      font-size:  12px;
-    }
-
-    /* --- default.css (lastet først) --- */
-    p { 
-      color:      grey; 
-    }
-
-    section.featured p { 
-      color:      red; 
-    }
-
-    /* --- theme.css (lastet sist) ----- */
-    
-    section.featured p { 
-      color:      blue; 
-    }
-
-Finn alle deklarasjoner (`property: value`) som gjelder elementet (`p`) og property (`color`). Ranger de etter kilder og viktighet:
-
-
-    .no-highlight
-    Rang    Kilde       Viktighet     Antall?
-    1.      user        !important    0
-    2.      author      !important    0
-    3.      author      normal        3 (p, section.featured p, section.featured p)
-    4.      user        normal        0
-    5.      user agent                1 (p)
-
----
-
-# Cascade rekkefølge #2
-
-Av den med høyest rang som holdt deklarasjoner (style.css + theme.css), var det kun en deklarasjon?
-
-    .css
-    /* --- default.css (lastet først) --- */
-    p { 
-      color:      grey; 
-    }
-
-    section.featured p { 
-      color:      red; 
-    }
-
-    /* --- theme.css (lastet sist) ----- */
-    
-    section.featured p { 
-      color:      blue; 
-    }
-
----
-
-# Cascade rekkefølge #2
-
-Av den med høyest rang som holdt deklarasjoner (style.css + theme.css), var det kun en deklarasjon? Nei, så vi må fortsette:
-
-    .css
-    /* --- default.css (lastet først) --- */
-    p { 
-      color:      grey; 
-    }
-
-    section.featured p { 
-      color:      red; 
-    }
-
-    /* --- theme.css (lastet sist) ----- */
-    
-    section.featured p { 
-      color:      blue; 
-    }
-
-## Spesifitet
-Gi selektorene en score basert på hvor spesifikke de er:
-
-    .no-highlight
-    a = 1 hvis det finnes en style="..."-attributt på elementet inline i HTML
-    b = antall ID-attributter i selektor (#id)
-    c = antall klasse (.error), attributt (input[type=text]) og 
-        pseudu-klasse-selektorer (:hover, :nth-child) 
-    d = antall type (div) og pseduo-element-selektorer (:first-line)
-
----
-
-# Cascade rekkefølge #3
-
-## Altså:
-
-    .no-highlight
-    style.css:
-    -------------------------------------------------------------------
-    p                    /* a=0 b=0 c=0 d=1 -> specificity = 0,0,0,1 */
-    section.featured p   /* a=0 b=0 c=1 d=2 -> specificity = 0,0,1,2 */
-
-    theme.css:
-    -------------------------------------------------------------------
-    section.featured p   /* a=0 b=0 c=1 d=2 -> specificity = 0,0,1,2 */
-
-## Har vi en klar vinner?
-Nope, det er fortsatt uavgjort mellom `section.featured p` i style.css og theme.css. Regelen er da at den som ble definert sist vinner - i dette tilfellet theme.css.
-
-Fortsatt forvirret? [http://www.maxdesign.com.au/articles/css-cascade/](http://www.maxdesign.com.au/articles/css-cascade/)
-
----
-
-.middle.center
-# Mens vi er inne på selektorer...
-
----
-
-.big-code
-
-# Depth of applicability
-
-"HTML is like a tree structure of parents and children. The depth of applicability is the number of generations that are affected by a given rule." - [SMACSS](http://smacss.com/book/applicability)
-
-## Tett kobling :(
-Vanskelig å gjenbruke og mindre motstandsdyktig mot endringer
-
-    .css
-    /* Depth of applicability = 5 */
-    .sidebar .links ul > li a
-
----
-
-.big-code 
-
-# Depth of applicability
-
-"HTML is like a tree structure of parents and children. The depth of applicability is the number of generations that are affected by a given rule." - [SMACSS](http://smacss.com/book/applicability)
-
-## Tett kobling :(
-Vanskelig å gjenbruke og mindre motstandsdyktig mot endringer
-
-    .css
-    /* Depth of applicability = 5 */
-    .sidebar .links ul > li a
-
-## Løs kobling :)
-Enklere å gjenbruke!
-
-    .css
-    /* Depth of applicability = 2 */
-    .list-item a
-
----
-
-# Depth of applicability #2
-
-Regler matches fra høyre mot venstre
-
----
-
-# Depth of applicability #2
-
-Regler matches fra høyre mot <span class="alt">venstre</span>
-
----
-
-# Depth of applicability #2
-
-Regler matches fra høyre <span class="alt">mot venstre</span>
-
----
-
-# Depth of applicability #2
-
-Regler matches fra <span class="alt">høyre mot venstre</span>
-
----
-
-# Depth of applicability #2
-
-Regler matches <span class="alt">fra høyre mot venstre</span>
-
----
-
-# Depth of applicability #2
-
-Regler <span class="alt">matches fra høyre mot venstre</span>
-
-
----
-
-# Depth of applicability #2
-
-Regler matches fra høyre mot venstre
-
-## "This is the key to dramatically increasing performance. The fewer rules required to check for a given element, the faster style resolution will be."
-
-[developer.mozilla.com](https://developer.mozilla.org/en-US/docs/CSS/Writing_Efficient_CSS)
-
----
-
-.middle.center
-
-# Med det friskt i minnet...
-
----
-
 .agenda.right
 
 # Hva har andre tenkt rundt modularisering?
@@ -435,7 +142,7 @@ Regler matches fra høyre mot venstre
 
 * OOCSS     <span class="alt">Object Oriented CSS</span>
 * SMACSS    <span class="alt">Scalable and Modular Architecture for CSS</span>
-* (BEM)       <span class="alt">Block, Element, Modifier</span>
+* (BEM)     <span class="alt">Block, Element, Modifier</span>
 
 ---
 
@@ -463,7 +170,7 @@ Nicole Sullivan
 
 * Hovedprinsipper:
   * Separer struktur og skin
-  * Separate container and content
+  * Separer container and content
 * Implementasjon
   * Laget for å [extendes](http://csswizardry.com/2012/06/the-open-closed-principle-applied-to-css/)
   * Enkelte komponenter er ferdig (grid, modules) andre eksperimentelle (tabs, media object)
@@ -603,8 +310,6 @@ Og lage en beskrivende klasse:
     .css
     .fancy-title {}
 
-I tillegg vil dette gjøre at man ikke trenger å overstyre stiler når man ønsker at en `<h2>` inne i ` .fancyObject h2` skal se ut som en vanlig `<h2>`
-
 ---
 
 .big-code
@@ -661,7 +366,7 @@ For stiler som er delt av alle - f.eks. fontstørrelse, font-type og farger
         color: #999;
     }
 
-* Består typisk av element-selektorer: `a`, `body`, `table`
+* Består typisk av type-selektorer: `a`, `body`, `table`
 * Konservativ holdning. Er du sikker på at det alltid vil se slik ut?
 
 ---
@@ -928,7 +633,6 @@ Ved å minimere cascading og bruk av spesifikke selektorer
 
     .css
     .module .title {} /* OOCSS */
-    .block__element {} /* BEM */
     .module-title {} /* SMACSS */
     .module > h2 {} /* SMACSS */
 
@@ -1572,6 +1276,15 @@ Filstruktur
 
 ---
 
+.middle.center
+
+# Forskjeller
+## Få. Syntaks. SASS er kraftigere. LESS is more?
+
+Se også [SASS vs LESS](https://gist.github.com/674726)
+
+---
+
 # .batmobile
 
 ![](gfx/cc-batmobile-color.png)
@@ -1603,15 +1316,6 @@ Filstruktur
 ![](gfx/cc-batmobile.png)
 
 <small class="attribution">["Batmobile"](http://www.flickr.com/photos/pmiaki/6768809117/) by psiaki (CC BY 2.0)</small>
-
----
-
-.middle.center
-
-# Forskjeller
-## Få. Syntaks. SASS er kraftigere. LESS is more?
-
-Se også [SASS vs LESS](https://gist.github.com/674726)
 
 ---
 
